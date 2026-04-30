@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Heart, TrendingUp, Menu, X } from 'lucide-react';
-import { useCMS, EditableText, EditableImage } from './cms';
+import { useCMS, EditableText, EditableImage, uploadImageToCloudinary } from './cms';
 import { AdminModals } from './components/AdminModals';
 import Quiz from './components/Quiz';
 import './index.css';
@@ -103,12 +103,11 @@ function App() {
              <div style={{ marginTop: '2rem', position: 'relative', zIndex: 10 }}>
                 <label className="btn btn-outline" style={{ borderColor: 'white', color: 'white', cursor: 'pointer', backgroundColor: 'rgba(0,0,0,0.3)' }}>
                   Wijzig Achtergrondfoto Hero
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
                     const file = e.target.files[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => updateContent('heroImage', reader.result);
-                      reader.readAsDataURL(file);
+                      const url = await uploadImageToCloudinary(file);
+                      if (url) updateContent('heroImage', url);
                     }
                   }} />
                 </label>
@@ -172,12 +171,11 @@ function App() {
              <div style={{ marginTop: '2rem', textAlign: 'center' }}>
                 <label className="btn btn-outline" style={{ borderColor: 'white', color: 'white', cursor: 'pointer', position: 'relative', zIndex: 10 }}>
                   Wijzig Achtergrondfoto
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
                     const file = e.target.files[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => updateContent('quoteImage', reader.result);
-                      reader.readAsDataURL(file);
+                      const url = await uploadImageToCloudinary(file);
+                      if (url) updateContent('quoteImage', url);
                     }
                   }} />
                 </label>
@@ -307,12 +305,11 @@ function App() {
              <div style={{ marginTop: '2rem', textAlign: 'center' }}>
                 <label className="btn btn-outline" style={{ borderColor: 'var(--color-primary)', color: 'var(--color-text)', backgroundColor: '#fff', cursor: 'pointer', position: 'relative', zIndex: 10 }}>
                   Wijzig Achtergrondfoto Contact
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
                     const file = e.target.files[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => updateContent('contactImage', reader.result);
-                      reader.readAsDataURL(file);
+                      const url = await uploadImageToCloudinary(file);
+                      if (url) updateContent('contactImage', url);
                     }
                   }} />
                 </label>

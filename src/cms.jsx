@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { db } from './firebase';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
 // Default content
 const defaultContent = {
@@ -36,6 +38,34 @@ const defaultContent = {
   linkedinLink: "https://linkedin.com"
 };
 
+export const uploadImageToCloudinary = async (file) => {
+  // We gebruiken een toast/alert voor simpele UX tijdens uploaden
+  alert("Foto wordt geüpload naar Cloudinary... even geduld a.u.b.");
+  const formData = new FormData();
+  formData.append('file', file);
+  // LET OP: 'coaching_preset' moet nog worden aangemaakt in Cloudinary!
+  formData.append('upload_preset', 'coaching_preset'); 
+  formData.append('cloud_name', 'dgcsywntf');
+
+  try {
+    const res = await fetch('https://api.cloudinary.com/v1_1/dgcsywntf/image/upload', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (data.secure_url) {
+      alert("Foto succesvol geüpload!");
+      return data.secure_url;
+    } else {
+      throw new Error(data.error?.message || 'Onbekende fout');
+    }
+  } catch (error) {
+    console.error("Upload error", error);
+    alert('Upload mislukt: ' + error.message + '\n(Heb je de Upload Preset al aangemaakt in Cloudinary?)');
+    return null;
+  }
+};
+
 const CMSContext = createContext();
 
 export function CMSProvider({ children }) {
@@ -45,20 +75,35 @@ export function CMSProvider({ children }) {
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
-    // Load from localStorage as fallback database
-    const saved = localStorage.getItem('coaching-cms-data');
-    if (saved) {
-      try {
-        setContent({ ...defaultContent, ...JSON.parse(saved) });
-      } catch(e) {}
-    }
+    // Luister live naar Firebase Firestore wijzigingen
+    const docRef = doc(db, 'coaching', 'content');
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setContent({ ...defaultContent, ...docSnap.data() });
+      } else {
+        // Document bestaat nog niet in Firebase, maak hem aan met de standaard waarden
+        setDoc(docRef, defaultContent);
+      }
+    }, (error) => {
+      console.error("Firebase Snapshot error:", error);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const updateContent = (key, value) => {
+  const updateContent = async (key, value) => {
+    // Lokale state updaten voor instant feedback (optimistic UI)
     const newContent = { ...content, [key]: value };
     setContent(newContent);
-    localStorage.setItem('coaching-cms-data', JSON.stringify(newContent));
-    // Here we can easily add Firebase update logic later
+    
+    // Direct opslaan in Firestore
+    try {
+      const docRef = doc(db, 'coaching', 'content');
+      await setDoc(docRef, { [key]: value }, { merge: true });
+    } catch (error) {
+      console.error("Fout bij opslaan in Firebase:", error);
+      alert("Fout bij opslaan. Heb je Firebase Firestore regels ingesteld op 'Test mode'?");
+    }
   };
 
   return (
@@ -116,14 +161,13 @@ export function EditableImage({ fieldKey, className = "", style = {}, alt = "" }
     return <img src={src} alt={alt} className={className} style={style} />;
   }
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateContent(fieldKey, reader.result);
-      };
-      reader.readAsDataURL(file);
+      const cloudinaryUrl = await uploadImageToCloudinary(file);
+      if (cloudinaryUrl) {
+        updateContent(fieldKey, cloudinaryUrl);
+      }
     }
   };
 
