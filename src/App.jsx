@@ -82,6 +82,7 @@ function App() {
         </div>
       </nav>
 
+      <main>
       {/* STAP 2 — HERO SECTIE */}
       <section 
         id="home" 
@@ -279,12 +280,12 @@ function App() {
             
             <form 
               className="contact-form" 
-              action={`https://formsubmit.co/${content.contactEmail}`} 
+              action="https://api.web3forms.com/submit" 
               method="POST"
             >
-              <input type="hidden" name="_subject" value="Nieuw bericht via de coaching website!" />
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_next" value={window.location.href} />
+              <input type="hidden" name="access_key" value={content.web3formsKey || ''} />
+              <input type="hidden" name="subject" value="Nieuw bericht via de coaching website!" />
+              <input type="hidden" name="redirect" value={window.location.href} />
 
               <div className="form-group">
                 <input type="text" name="name" placeholder="Naam" required />
@@ -317,6 +318,8 @@ function App() {
           )}
         </div>
       </section>
+
+      </main>
 
       {/* STAP 8 — FOOTER */}
       <footer>

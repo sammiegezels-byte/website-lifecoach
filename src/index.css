@@ -4,7 +4,7 @@
 :root {
   --color-bg: #FAFAF7;
   --color-primary: #8FAF8F;
-  --color-accent: #C4785A;
+  --color-accent: #9A5339;
   --color-text: #333333;
   --color-text-light: #555555;
   --color-white: #FFFFFF;
@@ -81,7 +81,7 @@ img {
 }
 
 .btn:hover {
-  background-color: #B3684B;
+  background-color: #8A462E;
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(196, 120, 90, 0.2);
 }

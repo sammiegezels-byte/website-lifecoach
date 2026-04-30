@@ -51,15 +51,16 @@ export function AdminModals() {
             <h3 style={{marginBottom: '1.5rem'}}>Instellingen</h3>
             
             <div style={{marginBottom: '1.5rem'}}>
-              <label style={labelStyle}>E-mailadres voor contactformulier</label>
+              <label style={labelStyle}>Contactformulier Access Key (Web3Forms)</label>
               <input 
-                type="email" 
-                value={content.contactEmail}
-                onChange={(e) => updateContent('contactEmail', e.target.value)}
+                type="text" 
+                value={content.web3formsKey || ""}
+                onChange={(e) => updateContent('web3formsKey', e.target.value)}
                 style={inputStyle}
+                placeholder="Plak hier je Access Key"
               />
               <p style={{fontSize: '0.8rem', color: '#666', marginTop: '0.3rem'}}>
-                Alle berichten van klanten worden naar dit e-mailadres gestuurd via FormSubmit.co.
+                Veel betrouwbaarder dan FormSubmit! Ga naar <a href="https://web3forms.com/" target="_blank" rel="noreferrer" style={{color: 'var(--color-primary)'}}>web3forms.com</a>, vul je e-mailadres in, en je ontvangt meteen een Access Key in je mailbox. Plak die code hierboven.
               </p>
             </div>
 
