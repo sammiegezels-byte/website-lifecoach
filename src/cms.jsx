@@ -176,7 +176,7 @@ export function EditableImage({ fieldKey, className = "", style = {}, alt = "" }
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+    <div style={{ position: 'relative', display: 'inline-block', width: '100%', height: '100%' }}>
       <img src={src} alt={alt} className={className} style={{...style, opacity: 0.7}} />
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: style.borderRadius || 'inherit', zIndex: 10 }}>
         <label style={{ padding: '8px 16px', background: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', color: '#333' }}>

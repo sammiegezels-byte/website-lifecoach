@@ -207,7 +207,9 @@ function App() {
           >
             <motion.div className="service-card" variants={fadeUp}>
               <div className="service-icon"><Compass size={32} /></div>
-              <EditableImage fieldKey="card1Image" className="service-img" alt="Levensrichting" />
+              <div className="service-img-wrapper origin-right">
+                <EditableImage fieldKey="card1Image" alt="Levensrichting" />
+              </div>
               <h3><EditableText fieldKey="card1Title" /></h3>
               <p><EditableText fieldKey="card1Text" multiline /></p>
               <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
@@ -215,7 +217,9 @@ function App() {
 
             <motion.div className="service-card" variants={fadeUp}>
               <div className="service-icon"><Heart size={32} /></div>
-              <EditableImage fieldKey="card2Image" className="service-img" alt="Gezin & Relaties" />
+              <div className="service-img-wrapper origin-center">
+                <EditableImage fieldKey="card2Image" alt="Gezin & Relaties" />
+              </div>
               <h3><EditableText fieldKey="card2Title" /></h3>
               <p><EditableText fieldKey="card2Text" multiline /></p>
               <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
@@ -223,7 +227,9 @@ function App() {
 
             <motion.div className="service-card" variants={fadeUp}>
               <div className="service-icon"><TrendingUp size={32} /></div>
-              <EditableImage fieldKey="card3Image" className="service-img" alt="1:1 Life Coaching" />
+              <div className="service-img-wrapper origin-left">
+                <EditableImage fieldKey="card3Image" alt="1:1 Life Coaching" />
+              </div>
               <h3><EditableText fieldKey="card3Title" /></h3>
               <p><EditableText fieldKey="card3Text" multiline /></p>
               <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
