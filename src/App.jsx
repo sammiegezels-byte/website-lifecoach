@@ -69,7 +69,7 @@ function App() {
             <a href="#quiz">Gratis Quiz</a>
             <a href="#over-mij">Over Mij</a>
             <a href="#contact">Contact</a>
-            <a href="#contact" className="btn" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }}>Gratis Gesprek</a>
+            <a href="#contact" className="btn" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="navBtnText" /></a>
           </div>
 
           <button 
@@ -98,7 +98,7 @@ function App() {
           >
             <h1><EditableText fieldKey="heroTitle" /></h1>
             <p><EditableText fieldKey="heroSubtitle" /></p>
-            <a href="#contact" className="btn">Gratis Kennismakingsgesprek</a>
+            <a href="#contact" className="btn" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="heroBtnText" /></a>
           </motion.div>
           {isAdmin && (
              <div style={{ marginTop: '2rem', position: 'relative', zIndex: 10 }}>
@@ -133,7 +133,7 @@ function App() {
             <motion.div className="consultation-text" variants={fadeUp}>
               <h2><EditableText fieldKey="consultationTitle" /></h2>
               <p><EditableText fieldKey="consultationText" multiline /></p>
-              <a href="#contact" className="btn btn-outline">Plan Nu</a>
+              <a href="#contact" className="btn btn-outline" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="consultationBtnText" /></a>
             </motion.div>
           </motion.div>
         </div>
@@ -210,7 +210,7 @@ function App() {
               <EditableImage fieldKey="card1Image" className="service-img" alt="Levensrichting" />
               <h3><EditableText fieldKey="card1Title" /></h3>
               <p><EditableText fieldKey="card1Text" multiline /></p>
-              <a href="#contact" className="btn btn-outline" style={{width: '100%'}}>Meer info</a>
+              <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
             </motion.div>
 
             <motion.div className="service-card" variants={fadeUp}>
@@ -218,7 +218,7 @@ function App() {
               <EditableImage fieldKey="card2Image" className="service-img" alt="Gezin & Relaties" />
               <h3><EditableText fieldKey="card2Title" /></h3>
               <p><EditableText fieldKey="card2Text" multiline /></p>
-              <a href="#contact" className="btn btn-outline" style={{width: '100%'}}>Meer info</a>
+              <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
             </motion.div>
 
             <motion.div className="service-card" variants={fadeUp}>
@@ -226,7 +226,7 @@ function App() {
               <EditableImage fieldKey="card3Image" className="service-img" alt="1:1 Life Coaching" />
               <h3><EditableText fieldKey="card3Title" /></h3>
               <p><EditableText fieldKey="card3Text" multiline /></p>
-              <a href="#contact" className="btn btn-outline" style={{width: '100%'}}>Meer info</a>
+              <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
             </motion.div>
           </motion.div>
         </div>

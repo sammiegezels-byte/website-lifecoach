@@ -8,9 +8,12 @@ const defaultContent = {
   contactEmail: "lindsay@lifestylecoach.nl",
   heroTitle: "LIFE COACHING",
   heroSubtitle: "Ontdek jouw beste versie — voor elk moment in het leven",
+  navBtnText: "Gratis Gesprek",
+  heroBtnText: "Gratis Kennismakingsgesprek",
   consultationTitle: "PLAN EEN GRATIS GESPREK VAN 30 MINUTEN",
   consultationText: "Laten we samen praten over jouw leven, jouw dromen en de uitdagingen die je tegenhouden. Of je nu vastloopt, een nieuwe richting zoekt of gewoon meer balans wil — ik help jou verder. Kinderen, jongeren, ouders, volwassenen: iedereen is welkom.",
   quoteText: "Vind een leven dat past bij wie jij écht bent.",
+  consultationBtnText: "Plan Nu",
   servicesTitle: "WERK MET MIJ",
   card1Title: "LEVENSRICHTING",
   card1Text: "Ontdek wie je bent en wat je wil. We verkennen jouw passies, sterktes en dromen.",
@@ -18,6 +21,7 @@ const defaultContent = {
   card2Text: "Betere communicatie, meer verbinding. Voor ouders, koppels en gezinnen die sterker willen staan.",
   card3Title: "1:1 LIFE COACHING",
   card3Text: "Persoonlijke begeleiding op maat. Samen werken we aan jouw groei, balans en geluk.",
+  servicesBtnText: "Meer info",
   aboutTitle: "Hallo! Ik ben Lindsay Battiau,",
   aboutText1: "Life coach met een passie voor mensen. Ik begeleid kinderen, jongeren, ouders en volwassenen bij de uitdagingen van het leven.",
   aboutText2: "Of je nu zoekt naar meer richting, meer balans of gewoon iemand nodig hebt die écht luistert — je bent hier aan het juiste adres. Mijn aanpak is warm, persoonlijk en volledig op maat.",
@@ -146,7 +150,7 @@ export function EditableText({ fieldKey, type = "text", multiline = false, class
     <input 
       type="text"
       className={className}
-      style={{ width: '100%', padding: '4px', border: '2px dashed #8FAF8F', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.8)', ...style }}
+      style={{ width: `max(100%, ${value.length + 8}ch)`, padding: '4px', border: '2px dashed #8FAF8F', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.8)', boxSizing: 'border-box', ...style }}
       value={value}
       onChange={(e) => updateContent(fieldKey, e.target.value)}
     />
