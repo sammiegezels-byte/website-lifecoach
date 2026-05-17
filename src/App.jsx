@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Compass, Heart, TrendingUp, Menu, X } from 'lucide-react';
+import { Compass, Heart, TrendingUp, Menu, X, ArrowLeft, ArrowRight, Plus, Trash2 } from 'lucide-react';
 import { useCMS, EditableText, EditableImage, uploadImageToCloudinary } from './cms';
 import { AdminModals } from './components/AdminModals';
 import './index.css';
@@ -40,300 +40,399 @@ const staggerContainer = {
   }
 };
 
+// --- Extracted Components for Sections ---
+
+const HeroSection = () => {
+  const { content, updateContent, isAdmin } = useCMS();
+  return (
+    <section id="home" className="hero" style={{ backgroundImage: `url(${content.heroImage})` }}>
+      <div className="container">
+        <motion.div className="hero-content" initial="hidden" animate="visible" variants={fadeUp}>
+          <h1><EditableText fieldKey="heroTitle" /></h1>
+          <p><EditableText fieldKey="heroSubtitle" /></p>
+          <a href="#contact" className="btn" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="heroBtnText" /></a>
+        </motion.div>
+        {isAdmin && (
+           <div style={{ marginTop: '2rem', position: 'relative', zIndex: 10 }}>
+              <label className="btn btn-outline" style={{ borderColor: 'white', color: 'white', cursor: 'pointer', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                Wijzig Achtergrondfoto Hero
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const url = await uploadImageToCloudinary(file);
+                    if (url) updateContent('heroImage', url);
+                  }
+                }} />
+              </label>
+           </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+const AboutSection = () => {
+  return (
+    <section id="over-mij" className="about section-padding">
+      <div className="container">
+        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          <motion.div className="about-text" variants={fadeUp}>
+            <h2><EditableText fieldKey="aboutTitle" /></h2>
+            <p><EditableText fieldKey="aboutText1" multiline /></p>
+            <p><EditableText fieldKey="aboutText2" multiline /></p>
+          </motion.div>
+          <motion.div className="about-img" variants={fadeUp}>
+            <EditableImage fieldKey="aboutImage" alt="Portret Coach" />
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const ConsultationSection = () => {
+  const { isAdmin } = useCMS();
+  return (
+    <section id="werk-met-mij" className="consultation section-padding">
+      <div className="container">
+        <motion.div className="consultation-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          <motion.div className="consultation-img" variants={fadeUp}>
+            <EditableImage fieldKey="consultationImage" alt="Gratis Consultatie" />
+          </motion.div>
+          <motion.div className="consultation-text" variants={fadeUp}>
+            <h2><EditableText fieldKey="consultationTitle" /></h2>
+            <p><EditableText fieldKey="consultationText" multiline /></p>
+            <a href="#contact" className="btn btn-outline" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="consultationBtnText" /></a>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const ServicesSection = () => {
+  const { isAdmin } = useCMS();
+  return (
+    <section id="aanbod" className="services section-padding">
+      <div className="container">
+        <motion.h2 className="services-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <EditableText fieldKey="servicesTitle" />
+        </motion.h2>
+        <motion.div className="services-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}>
+          <motion.div className="service-card" variants={fadeUp}>
+            <div className="service-icon"><Compass size={32} /></div>
+            <div className="service-img-wrapper origin-right">
+              <EditableImage fieldKey="card1Image" alt="Levensrichting" />
+            </div>
+            <h3><EditableText fieldKey="card1Title" /></h3>
+            <p><EditableText fieldKey="card1Text" multiline /></p>
+            <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
+          </motion.div>
+          <motion.div className="service-card" variants={fadeUp}>
+            <div className="service-icon"><Heart size={32} /></div>
+            <div className="service-img-wrapper origin-center">
+              <EditableImage fieldKey="card2Image" alt="Gezin & Relaties" />
+            </div>
+            <h3><EditableText fieldKey="card2Title" /></h3>
+            <p><EditableText fieldKey="card2Text" multiline /></p>
+            <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
+          </motion.div>
+          <motion.div className="service-card" variants={fadeUp}>
+            <div className="service-icon"><TrendingUp size={32} /></div>
+            <div className="service-img-wrapper origin-left">
+              <EditableImage fieldKey="card3Image" alt="1:1 Life Coaching" />
+            </div>
+            <h3><EditableText fieldKey="card3Title" /></h3>
+            <p><EditableText fieldKey="card3Text" multiline /></p>
+            <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const ContactSection = () => {
+  const { content, updateContent, isAdmin } = useCMS();
+  return (
+    <section id="contact" className="contact section-padding" style={{ backgroundImage: `url(${content.contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 250, 247, 0.6)' }}></div>
+      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+        <motion.div className="contact-container" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <h2><EditableText fieldKey="contactTitle" /></h2>
+          <p><EditableText fieldKey="contactSubtitle" /></p>
+          <form className="contact-form" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value={content.web3formsKey || ''} />
+            <input type="hidden" name="subject" value="Nieuw bericht via de coaching website!" />
+            <input type="hidden" name="redirect" value={window.location.href} />
+            <div className="form-group">
+              <input type="text" name="name" placeholder="Naam" required />
+            </div>
+            <div className="form-group">
+              <input type="email" name="email" placeholder="E-mailadres" required />
+            </div>
+            <div className="form-group full-width">
+              <input type="tel" name="phone" placeholder="Telefoonnummer (optioneel)" />
+            </div>
+            <div className="form-group full-width">
+              <textarea name="message" placeholder="Jouw bericht" required></textarea>
+            </div>
+            <button type="submit" className="btn">Verstuur Bericht</button>
+          </form>
+        </motion.div>
+        {isAdmin && (
+           <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+              <label className="btn btn-outline" style={{ borderColor: 'var(--color-primary)', color: 'var(--color-text)', backgroundColor: '#fff', cursor: 'pointer', position: 'relative', zIndex: 10 }}>
+                Wijzig Achtergrondfoto Contact
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const url = await uploadImageToCloudinary(file);
+                    if (url) updateContent('contactImage', url);
+                  }
+                }} />
+              </label>
+           </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+const ParallaxSection = ({ id, imageKey, quoteKey }) => {
+  const { content, updateContent, updateMultiple, isAdmin } = useCMS();
+
+  const handleRemove = () => {
+    if (window.confirm("Zeker dat je deze parallax wilt verwijderen?")) {
+      const newOrder = (content.sectionOrder || []).filter(sId => sId !== id);
+      updateMultiple({ sectionOrder: newOrder });
+    }
+  };
+
+  return (
+    <section id={id} className="quote-section" style={{ backgroundImage: `url(${content[imageKey]})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', position: 'relative', padding: '120px 0' }}>
+      {isAdmin && id !== 'visie' && (
+        <button onClick={handleRemove} style={{ position: 'absolute', top: 20, right: 20, background: '#e74c3c', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '5px', cursor: 'pointer', zIndex: 100, display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <Trash2 size={16} /> Verwijder Parallax
+        </button>
+      )}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.4)' }}></div>
+      <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        <motion.blockquote initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)', color: 'white', margin: 0 }}>
+          <EditableText fieldKey={quoteKey} />
+        </motion.blockquote>
+        {isAdmin && (
+           <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+              <label className="btn btn-outline" style={{ borderColor: 'white', color: 'white', cursor: 'pointer', position: 'relative', zIndex: 10 }}>
+                Wijzig Achtergrondfoto
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const url = await uploadImageToCloudinary(file);
+                    if (url) updateContent(imageKey, url);
+                  }
+                }} />
+              </label>
+           </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+const CustomSection = ({ sectionId }) => {
+  const { content, updateMultiple, isAdmin } = useCMS();
+  
+  const handleRemove = () => {
+    if (window.confirm("Zeker dat je deze sectie wilt verwijderen?")) {
+      const newOrder = (content.sectionOrder || []).filter(id => id !== sectionId);
+      const newCustoms = (content.customSections || []).filter(s => s.id !== sectionId);
+      updateMultiple({ sectionOrder: newOrder, customSections: newCustoms });
+    }
+  };
+
+  return (
+    <section id={sectionId} className="about section-padding" style={{ position: 'relative' }}>
+      {isAdmin && (
+        <button onClick={handleRemove} style={{ position: 'absolute', top: 20, right: 20, background: '#e74c3c', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '5px', cursor: 'pointer', zIndex: 100, display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <Trash2 size={16} /> Verwijder Pagina
+        </button>
+      )}
+      <div className="container">
+        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+          <motion.div className="about-text" variants={fadeUp}>
+            <h2><EditableText fieldKey={`customTitle_${sectionId}`} /></h2>
+            <p><EditableText fieldKey={`customText_${sectionId}`} multiline /></p>
+          </motion.div>
+          <motion.div className="about-img" variants={fadeUp}>
+            <EditableImage fieldKey={`customImage_${sectionId}`} alt="Custom" />
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { content, updateContent, isAdmin, setShowLogin } = useCMS();
+  const { content, updateMultiple, isAdmin, setShowLogin } = useCMS();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const headingFont = content.themeHeadingFont || 'Playfair Display';
+    const bodyFont = content.themeBodyFont || 'Inter';
+    const color = content.themeColor || '#8FAF8F';
+
+    const linkId = 'dynamic-fonts';
+    let link = document.getElementById(linkId);
+    if (!link) {
+      link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+    link.href = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@400;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;600&display=swap`;
+
+    document.documentElement.style.setProperty('--font-heading', `"${headingFont}", sans-serif`);
+    document.documentElement.style.setProperty('--font-body', `"${bodyFont}", sans-serif`);
+    document.documentElement.style.setProperty('--color-primary', color);
+  }, [content.themeHeadingFont, content.themeBodyFont, content.themeColor]);
+
+  const sectionOrder = content.sectionOrder || ['home', 'over-mij', 'parallax_1', 'visie', 'werk-met-mij', 'parallax_2', 'aanbod', 'contact'];
+
+  const moveSection = (index, direction) => {
+    if (!isAdmin) return;
+    const newOrder = [...sectionOrder];
+    if (direction === -1 && index > 0) {
+      [newOrder[index], newOrder[index - 1]] = [newOrder[index - 1], newOrder[index]];
+    } else if (direction === 1 && index < newOrder.length - 1) {
+      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+    }
+    updateMultiple({ sectionOrder: newOrder });
+  };
+
+  const addCustomSection = () => {
+    const newId = 'custom_' + Date.now();
+    const newOrder = [...sectionOrder];
+    
+    let insertIdx = newOrder.indexOf('contact');
+    if (insertIdx === -1) insertIdx = newOrder.length;
+
+    // Automatisch een parallax toevoegen als deze nog niet op de pagina staat
+    if (!newOrder.includes('parallax_1')) {
+      newOrder.splice(insertIdx, 0, 'parallax_1');
+      insertIdx++;
+    } else if (!newOrder.includes('parallax_2')) {
+      newOrder.splice(insertIdx, 0, 'parallax_2');
+      insertIdx++;
+    }
+    
+    newOrder.splice(insertIdx, 0, newId);
+
+    const newCustoms = [...(content.customSections || []), { id: newId }];
+    updateMultiple({ 
+      sectionOrder: newOrder, 
+      customSections: newCustoms,
+      [`customTitle_${newId}`]: "Nieuwe Pagina",
+      [`customText_${newId}`]: "Pas deze tekst aan naar wens.",
+      [`customImage_${newId}`]: "/images/about_me_img_1777508927144.png"
+    });
+  };
+
+  const getMenuLabel = (id) => {
+    if (id === 'home') return 'Home';
+    if (id === 'over-mij') return 'Over Mij';
+    if (id === 'visie') return 'Mijn visie';
+    if (id === 'werk-met-mij') return 'Werk met mij';
+    if (id === 'aanbod') return 'Aanbod';
+    if (id === 'contact' || id === 'parallax_1' || id === 'parallax_2') return null;
+    const custom = (content.customSections || []).find(s => s.id === id);
+    if (custom) return content[`customTitle_${id}`] || 'Nieuwe Pagina';
+    return null;
+  };
 
   return (
     <div className="app">
       <AdminModals />
       
-      {/* STAP 1 — NAVIGATIEBALK */}
+      {/* NAVIGATIEBALK */}
       <nav className="navbar" style={{ padding: isScrolled ? '1rem 0' : '1.5rem 0' }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="logo"><EditableText fieldKey="footerLogo" /></div>
           
           <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            <a href="#home">Home</a>
-            <a href="#over-mij">Over Mij</a>
-            <a href="#visie">Mijn visie</a>
-            <a href="#werk-met-mij">Werk met mij</a>
-            <a href="#aanbod">Aanbod</a>
-            <a href="#contact">Contact</a>
+            {sectionOrder.map((id, index) => {
+              const label = getMenuLabel(id);
+              if (!label && !isAdmin) return null;
+              if (!label && isAdmin && (id === 'contact' || id.startsWith('parallax'))) return null;
+              
+              if (!label) return null;
+
+              return (
+                <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  {isAdmin && (
+                    <button onClick={() => moveSection(index, -1)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--color-primary)' }}><ArrowLeft size={14}/></button>
+                  )}
+                  <a href={`#${id}`}>{label}</a>
+                  {isAdmin && (
+                    <button onClick={() => moveSection(index, 1)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--color-primary)' }}><ArrowRight size={14}/></button>
+                  )}
+                </div>
+              );
+            })}
+            
             <a href="#contact" className="btn" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="navBtnText" /></a>
           </div>
 
-          <button 
-            className="mobile-menu-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Menu openen"
-          >
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
       </nav>
 
       <main>
-      {/* STAP 2 — HERO SECTIE */}
-      <section 
-        id="home" 
-        className="hero" 
-        style={{ backgroundImage: `url(${content.heroImage})` }}
-      >
-        <div className="container">
-          <motion.div 
-            className="hero-content"
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-          >
-            <h1><EditableText fieldKey="heroTitle" /></h1>
-            <p><EditableText fieldKey="heroSubtitle" /></p>
-            <a href="#contact" className="btn" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="heroBtnText" /></a>
-          </motion.div>
-          {isAdmin && (
-             <div style={{ marginTop: '2rem', position: 'relative', zIndex: 10 }}>
-                <label className="btn btn-outline" style={{ borderColor: 'white', color: 'white', cursor: 'pointer', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                  Wijzig Achtergrondfoto Hero
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const url = await uploadImageToCloudinary(file);
-                      if (url) updateContent('heroImage', url);
-                    }
-                  }} />
-                </label>
-             </div>
-          )}
-        </div>
-      </section>
-
-      {/* STAP 3 — OVER MIJ SECTIE */}
-      <section id="over-mij" className="about section-padding">
-        <div className="container">
-          <motion.div 
-            className="about-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.div className="about-text" variants={fadeUp}>
-              <h2><EditableText fieldKey="aboutTitle" /></h2>
-              <p><EditableText fieldKey="aboutText1" multiline /></p>
-              <p><EditableText fieldKey="aboutText2" multiline /></p>
-            </motion.div>
-            <motion.div className="about-img" variants={fadeUp}>
-              <EditableImage fieldKey="aboutImage" alt="Portret Coach" />
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* STAP 4 — MIJN VISIE SECTIE (Voormalig Quote) */}
-      <section 
-        id="visie"
-        className="quote-section"
-        style={{ 
-          backgroundImage: `url(${content.quoteImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          position: 'relative'
-        }}
-      >
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(143, 175, 143, 0.85)' }}></div>
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <motion.blockquote 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            style={{ textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-          >
-            "<EditableText fieldKey="quoteText" />"
-          </motion.blockquote>
-          {isAdmin && (
-             <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                <label className="btn btn-outline" style={{ borderColor: 'white', color: 'white', cursor: 'pointer', position: 'relative', zIndex: 10 }}>
-                  Wijzig Achtergrondfoto
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const url = await uploadImageToCloudinary(file);
-                      if (url) updateContent('quoteImage', url);
-                    }
-                  }} />
-                </label>
-             </div>
-          )}
-        </div>
-      </section>
-
-      {/* STAP 5 — WERK MET MIJ SECTIE (Voormalig Consultatie) */}
-      <section id="werk-met-mij" className="consultation section-padding">
-        <div className="container">
-          <motion.div 
-            className="consultation-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.div className="consultation-img" variants={fadeUp}>
-              <EditableImage fieldKey="consultationImage" alt="Gratis Consultatie" />
-            </motion.div>
-            <motion.div className="consultation-text" variants={fadeUp}>
-              <h2><EditableText fieldKey="consultationTitle" /></h2>
-              <p><EditableText fieldKey="consultationText" multiline /></p>
-              <a href="#contact" className="btn btn-outline" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="consultationBtnText" /></a>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* STAP 6 — AANBOD SECTIE (Voormalig Diensten/Coaching) */}
-      <section id="aanbod" className="services section-padding">
-        <div className="container">
-          <motion.h2 
-            className="services-title"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-          >
-            <EditableText fieldKey="servicesTitle" />
-          </motion.h2>
-          
-          <motion.div 
-            className="services-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={staggerContainer}
-          >
-            <motion.div className="service-card" variants={fadeUp}>
-              <div className="service-icon"><Compass size={32} /></div>
-              <div className="service-img-wrapper origin-right">
-                <EditableImage fieldKey="card1Image" alt="Levensrichting" />
-              </div>
-              <h3><EditableText fieldKey="card1Title" /></h3>
-              <p><EditableText fieldKey="card1Text" multiline /></p>
-              <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
-            </motion.div>
-
-            <motion.div className="service-card" variants={fadeUp}>
-              <div className="service-icon"><Heart size={32} /></div>
-              <div className="service-img-wrapper origin-center">
-                <EditableImage fieldKey="card2Image" alt="Gezin & Relaties" />
-              </div>
-              <h3><EditableText fieldKey="card2Title" /></h3>
-              <p><EditableText fieldKey="card2Text" multiline /></p>
-              <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
-            </motion.div>
-
-            <motion.div className="service-card" variants={fadeUp}>
-              <div className="service-icon"><TrendingUp size={32} /></div>
-              <div className="service-img-wrapper origin-left">
-                <EditableImage fieldKey="card3Image" alt="1:1 Life Coaching" />
-              </div>
-              <h3><EditableText fieldKey="card3Title" /></h3>
-              <p><EditableText fieldKey="card3Text" multiline /></p>
-              <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* STAP 7 — CONTACT SECTIE */}
-      <section 
-        id="contact" 
-        className="contact section-padding"
-        style={{ 
-          backgroundImage: `url(${content.contactImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          position: 'relative'
-        }}
-      >
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 250, 247, 0.6)' }}></div>
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <motion.div 
-            className="contact-container"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-          >
-            <h2><EditableText fieldKey="contactTitle" /></h2>
-            <p><EditableText fieldKey="contactSubtitle" /></p>
-            
-            <form 
-              className="contact-form" 
-              action="https://api.web3forms.com/submit" 
-              method="POST"
-            >
-              <input type="hidden" name="access_key" value={content.web3formsKey || ''} />
-              <input type="hidden" name="subject" value="Nieuw bericht via de coaching website!" />
-              <input type="hidden" name="redirect" value={window.location.href} />
-
-              <div className="form-group">
-                <input type="text" name="name" placeholder="Naam" required />
-              </div>
-              <div className="form-group">
-                <input type="email" name="email" placeholder="E-mailadres" required />
-              </div>
-              <div className="form-group full-width">
-                <input type="tel" name="phone" placeholder="Telefoonnummer (optioneel)" />
-              </div>
-              <div className="form-group full-width">
-                <textarea name="message" placeholder="Jouw bericht" required></textarea>
-              </div>
-              <button type="submit" className="btn">Verstuur Bericht</button>
-            </form>
-          </motion.div>
-          {isAdmin && (
-             <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                <label className="btn btn-outline" style={{ borderColor: 'var(--color-primary)', color: 'var(--color-text)', backgroundColor: '#fff', cursor: 'pointer', position: 'relative', zIndex: 10 }}>
-                  Wijzig Achtergrondfoto Contact
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const url = await uploadImageToCloudinary(file);
-                      if (url) updateContent('contactImage', url);
-                    }
-                  }} />
-                </label>
-             </div>
-          )}
-        </div>
-      </section>
-
+        {sectionOrder.map(id => {
+          switch(id) {
+            case 'home': return <HeroSection key={id} />;
+            case 'over-mij': return <AboutSection key={id} />;
+            case 'visie': return <ParallaxSection key={id} id={id} imageKey="quoteImage" quoteKey="quoteText" />;
+            case 'werk-met-mij': return <ConsultationSection key={id} />;
+            case 'aanbod': return <ServicesSection key={id} />;
+            case 'contact': return <ContactSection key={id} />;
+            case 'parallax_1': return <ParallaxSection key={id} id={id} imageKey="parallax1Image" quoteKey="parallax1Quote" />;
+            case 'parallax_2': return <ParallaxSection key={id} id={id} imageKey="parallax2Image" quoteKey="parallax2Quote" />;
+            default:
+              if (id.startsWith('custom_')) return <CustomSection key={id} sectionId={id} />;
+              return null;
+          }
+        })}
       </main>
 
-      {/* STAP 8 — FOOTER */}
+      {/* FOOTER */}
       <footer>
         <div className="container">
+          {isAdmin && (
+             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                <button className="btn" onClick={addCustomSection} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '1rem 2rem' }}>
+                  <Plus size={20} /> Extra Pagina Toevoegen
+                </button>
+             </div>
+          )}
           <div className="footer-content">
             <div className="footer-logo"><EditableText fieldKey="footerLogo" /></div>
             
             <div className="footer-links">
-              <a href="#home">Home</a>
-              <a href="#over-mij">Over Mij</a>
-              <a href="#visie">Mijn visie</a>
-              <a href="#werk-met-mij">Werk met mij</a>
-              <a href="#aanbod">Aanbod</a>
-              <a href="#contact">Contact</a>
+              {sectionOrder.map(id => {
+                const label = getMenuLabel(id);
+                if (label) return <a key={id} href={`#${id}`}>{label}</a>;
+                return null;
+              })}
             </div>
 
             <div className="social-icons">
@@ -342,16 +441,11 @@ function App() {
               <a href={content.linkedinLink} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn"><LinkedinIcon /></a>
             </div>
           </div>
-          <div 
-            className="copyright" 
-            onDoubleClick={() => setShowLogin(true)}
-            style={{ cursor: 'pointer', userSelect: 'none' }}
-          >
+          <div className="copyright" onDoubleClick={() => setShowLogin(true)} style={{ cursor: 'pointer', userSelect: 'none' }}>
             <EditableText fieldKey="footerCopyright" />
           </div>
         </div>
       </footer>
-
     </div>
   );
 }

@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useCMS } from '../cms';
-import { Settings, LogOut, X } from 'lucide-react';
+import { Settings, LogOut, X, Palette } from 'lucide-react';
+
+const FONTS = [
+  'Roboto', 'Open Sans', 'Inter', 'Montserrat', 'Poppins', 'Lato', 
+  'Merriweather', 'Playfair Display', 'Oswald', 'Raleway', 
+  'Arial', 'Georgia', 'Nunito', 'Quicksand', 
+  'Cabin', 'Comfortaa', 'Lora', 'Cormorant Garamond', 'Libre Baskerville',
+  'Outfit', 'DM Sans', 'Plus Jakarta Sans', 'Cinzel'
+];
 
 export function AdminModals() {
   const { content, updateContent, isAdmin, setIsAdmin, showLogin, setShowLogin, showSettings, setShowSettings } = useCMS();
@@ -63,6 +71,45 @@ export function AdminModals() {
                 Veel betrouwbaarder dan FormSubmit! Ga naar <a href="https://web3forms.com/" target="_blank" rel="noreferrer" style={{color: 'var(--color-primary)'}}>web3forms.com</a>, vul je e-mailadres in, en je ontvangt meteen een Access Key in je mailbox. Plak die code hierboven.
               </p>
             </div>
+
+            <h4 style={{marginTop: '2rem', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px'}}><Palette size={18}/> Vormgeving (Thema)</h4>
+
+            <div style={{marginBottom: '1.5rem'}}>
+              <label style={labelStyle}>Hoofdkleur Website</label>
+              <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
+                <input 
+                  type="color" 
+                  value={content.themeColor || "#8FAF8F"}
+                  onChange={(e) => updateContent('themeColor', e.target.value)}
+                  style={{width: '50px', height: '40px', padding: '0', border: 'none', cursor: 'pointer'}}
+                />
+                <span style={{fontSize: '0.9rem', color: '#666'}}>Kies de kleur voor knoppen, icoontjes en highlights.</span>
+              </div>
+            </div>
+
+            <div style={{marginBottom: '1.5rem'}}>
+              <label style={labelStyle}>Lettertype Titels (Headings)</label>
+              <select 
+                value={content.themeHeadingFont || "Playfair Display"}
+                onChange={(e) => updateContent('themeHeadingFont', e.target.value)}
+                style={inputStyle}
+              >
+                {FONTS.map(font => <option key={font} value={font}>{font}</option>)}
+              </select>
+            </div>
+
+            <div style={{marginBottom: '1.5rem'}}>
+              <label style={labelStyle}>Lettertype Tekst (Body)</label>
+              <select 
+                value={content.themeBodyFont || "Inter"}
+                onChange={(e) => updateContent('themeBodyFont', e.target.value)}
+                style={inputStyle}
+              >
+                {FONTS.map(font => <option key={font} value={font}>{font}</option>)}
+              </select>
+            </div>
+
+            <h4 style={{marginTop: '2rem', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem'}}>Overige Instellingen</h4>
 
             <div style={{marginBottom: '1.5rem'}}>
               <label style={labelStyle}>Nieuwe Pincode (4 tot 8 cijfers)</label>

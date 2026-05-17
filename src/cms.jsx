@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { db } from './firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
@@ -8,7 +8,7 @@ const defaultContent = {
   contactEmail: "lindsay@lifestylecoach.nl",
   heroTitle: "LIFE COACHING",
   heroSubtitle: "Ontdek jouw beste versie — voor elk moment in het leven",
-  navBtnText: "Gratis Gesprek",
+  navBtnText: "Stuur Bericht",
   heroBtnText: "Gratis Kennismakingsgesprek",
   consultationTitle: "PLAN EEN GRATIS GESPREK VAN 30 MINUTEN",
   consultationText: "Laten we samen praten over jouw leven, jouw dromen en de uitdagingen die je tegenhouden. Of je nu vastloopt, een nieuwe richting zoekt of gewoon meer balans wil — ik help jou verder. Kinderen, jongeren, ouders, volwassenen: iedereen is welkom.",
@@ -37,9 +37,16 @@ const defaultContent = {
   aboutImage: "/images/about_me_img_1777508927144.png",
   quoteImage: "/images/quote_bg_1777515862508.png",
   contactImage: "/images/contact_bg_1777516360136.png",
+  parallax1Image: "/images/parallax_1.png",
+  parallax2Image: "/images/parallax_2.png",
   instagramLink: "https://instagram.com",
   facebookLink: "https://facebook.com",
-  linkedinLink: "https://linkedin.com"
+  linkedinLink: "https://linkedin.com",
+  themeHeadingFont: "Playfair Display",
+  themeBodyFont: "Inter",
+  themeColor: "#8FAF8F",
+  sectionOrder: ['home', 'over-mij', 'visie', 'werk-met-mij', 'aanbod', 'contact'],
+  customSections: []
 };
 
 export const uploadImageToCloudinary = async (file) => {
@@ -110,9 +117,20 @@ export function CMSProvider({ children }) {
     }
   };
 
+  const updateMultiple = async (updatesObj) => {
+    const newContent = { ...content, ...updatesObj };
+    setContent(newContent);
+    try {
+      const docRef = doc(db, 'coaching', 'content');
+      await setDoc(docRef, updatesObj, { merge: true });
+    } catch (error) {
+      console.error("Fout bij opslaan in Firebase:", error);
+    }
+  };
+
   return (
     <CMSContext.Provider value={{
-      content, updateContent, 
+      content, updateContent, updateMultiple,
       isAdmin, setIsAdmin, 
       showLogin, setShowLogin,
       showSettings, setShowSettings
@@ -127,22 +145,43 @@ export const useCMS = () => useContext(CMSContext);
 export function EditableText({ fieldKey, type = "text", multiline = false, className = "", style = {} }) {
   const { content, updateContent, isAdmin } = useCMS();
   const value = content[fieldKey] || "";
+  const editorRef = useRef(null);
 
   if (!isAdmin) {
     if (multiline) {
-      return <div className={className} style={style}>{value.split('\n').map((line, i) => <React.Fragment key={i}>{line}<br/></React.Fragment>)}</div>;
+      return <div className={className} style={{...style}} dangerouslySetInnerHTML={{ __html: value }} />;
     }
-    return <span className={className} style={style}>{value}</span>;
+    return <span className={className} style={style} dangerouslySetInnerHTML={{ __html: value }} />;
   }
 
   if (multiline) {
+    const exec = (command, val = null) => {
+      document.execCommand(command, false, val);
+      if (editorRef.current) {
+        updateContent(fieldKey, editorRef.current.innerHTML);
+      }
+    };
+    const btnStyle = { background: '#eee', border: '1px solid #ccc', padding: '2px 8px', cursor: 'pointer', borderRadius: '4px', fontSize: '12px' };
+    const themeColor = content.themeColor || '#8FAF8F';
+
     return (
-      <textarea 
-        className={className}
-        style={{ width: '100%', minHeight: '100px', padding: '8px', border: '2px dashed #8FAF8F', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.8)', ...style }}
-        value={value}
-        onChange={(e) => updateContent(fieldKey, e.target.value)}
-      />
+      <div className={className} style={{ ...style, background: 'rgba(255,255,255,0.95)', padding: '5px', borderRadius: '4px', border: '2px dashed var(--color-primary)' }}>
+        <div style={{ padding: '5px', borderBottom: '1px solid #ddd', display: 'flex', gap: '5px', marginBottom: '5px' }}>
+          <button onClick={(e) => { e.preventDefault(); exec('bold'); }} style={btnStyle}><b>B</b></button>
+          <button onClick={(e) => { e.preventDefault(); exec('italic'); }} style={btnStyle}><i>I</i></button>
+          <button onClick={(e) => { e.preventDefault(); exec('underline'); }} style={btnStyle}><u>U</u></button>
+          <button onClick={(e) => { e.preventDefault(); exec('foreColor', themeColor); }} style={{...btnStyle, color: themeColor}}>A</button>
+          <button onClick={(e) => { e.preventDefault(); exec('removeFormat'); }} style={btnStyle}>Reset</button>
+        </div>
+        <div 
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          onBlur={(e) => updateContent(fieldKey, e.currentTarget.innerHTML)}
+          style={{ padding: '10px', minHeight: '100px', outline: 'none' }}
+          dangerouslySetInnerHTML={{ __html: value }}
+        />
+      </div>
     );
   }
 
@@ -150,7 +189,7 @@ export function EditableText({ fieldKey, type = "text", multiline = false, class
     <input 
       type="text"
       className={className}
-      style={{ width: `max(100%, ${value.length + 8}ch)`, padding: '4px', border: '2px dashed #8FAF8F', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.8)', boxSizing: 'border-box', ...style }}
+      style={{ width: `max(100%, ${value.length + 8}ch)`, padding: '4px', border: '2px dashed var(--color-primary)', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.8)', boxSizing: 'border-box', ...style }}
       value={value}
       onChange={(e) => updateContent(fieldKey, e.target.value)}
     />
