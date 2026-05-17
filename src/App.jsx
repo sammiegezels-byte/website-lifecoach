@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Compass, Heart, TrendingUp, Menu, X } from 'lucide-react';
 import { useCMS, EditableText, EditableImage, uploadImageToCloudinary } from './cms';
 import { AdminModals } from './components/AdminModals';
-import Quiz from './components/Quiz';
 import './index.css';
 
 const InstagramIcon = () => (
@@ -65,9 +64,10 @@ function App() {
           
           <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
             <a href="#home">Home</a>
-            <a href="#coaching">1:1 Coaching</a>
-            <a href="#quiz">Gratis Quiz</a>
             <a href="#over-mij">Over Mij</a>
+            <a href="#visie">Mijn visie</a>
+            <a href="#werk-met-mij">Werk met mij</a>
+            <a href="#aanbod">Aanbod</a>
             <a href="#contact">Contact</a>
             <a href="#contact" className="btn" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="navBtnText" /></a>
           </div>
@@ -117,37 +117,31 @@ function App() {
         </div>
       </section>
 
-      {/* STAP 3 — GRATIS CONSULTATIE SECTIE */}
-      <section id="consultatie" className="consultation section-padding">
+      {/* STAP 3 — OVER MIJ SECTIE */}
+      <section id="over-mij" className="about section-padding">
         <div className="container">
           <motion.div 
-            className="consultation-grid"
+            className="about-grid"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            <motion.div className="consultation-img" variants={fadeUp}>
-              <EditableImage fieldKey="consultationImage" alt="Gratis Consultatie" />
+            <motion.div className="about-text" variants={fadeUp}>
+              <h2><EditableText fieldKey="aboutTitle" /></h2>
+              <p><EditableText fieldKey="aboutText1" multiline /></p>
+              <p><EditableText fieldKey="aboutText2" multiline /></p>
             </motion.div>
-            <motion.div className="consultation-text" variants={fadeUp}>
-              <h2><EditableText fieldKey="consultationTitle" /></h2>
-              <p><EditableText fieldKey="consultationText" multiline /></p>
-              <a href="#contact" className="btn btn-outline" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="consultationBtnText" /></a>
+            <motion.div className="about-img" variants={fadeUp}>
+              <EditableImage fieldKey="aboutImage" alt="Portret Coach" />
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* STAP 3.5 — GRATIS QUIZ */}
-      <section id="quiz" className="section-padding" style={{ backgroundColor: '#fff' }}>
-        <div className="container">
-          <Quiz />
-        </div>
-      </section>
-
-      {/* STAP 4 — HOE KAN IK JOU HELPEN SECTIE */}
+      {/* STAP 4 — MIJN VISIE SECTIE (Voormalig Quote) */}
       <section 
+        id="visie"
         className="quote-section"
         style={{ 
           backgroundImage: `url(${content.quoteImage})`,
@@ -185,8 +179,30 @@ function App() {
         </div>
       </section>
 
-      {/* STAP 5 — DIENSTEN SECTIE */}
-      <section id="coaching" className="services section-padding">
+      {/* STAP 5 — WERK MET MIJ SECTIE (Voormalig Consultatie) */}
+      <section id="werk-met-mij" className="consultation section-padding">
+        <div className="container">
+          <motion.div 
+            className="consultation-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            <motion.div className="consultation-img" variants={fadeUp}>
+              <EditableImage fieldKey="consultationImage" alt="Gratis Consultatie" />
+            </motion.div>
+            <motion.div className="consultation-text" variants={fadeUp}>
+              <h2><EditableText fieldKey="consultationTitle" /></h2>
+              <p><EditableText fieldKey="consultationText" multiline /></p>
+              <a href="#contact" className="btn btn-outline" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="consultationBtnText" /></a>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* STAP 6 — AANBOD SECTIE (Voormalig Diensten/Coaching) */}
+      <section id="aanbod" className="services section-padding">
         <div className="container">
           <motion.h2 
             className="services-title"
@@ -233,28 +249,6 @@ function App() {
               <h3><EditableText fieldKey="card3Title" /></h3>
               <p><EditableText fieldKey="card3Text" multiline /></p>
               <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* STAP 6 — OVER MIJ SECTIE */}
-      <section id="over-mij" className="about section-padding">
-        <div className="container">
-          <motion.div 
-            className="about-grid"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <motion.div className="about-text" variants={fadeUp}>
-              <h2><EditableText fieldKey="aboutTitle" /></h2>
-              <p><EditableText fieldKey="aboutText1" multiline /></p>
-              <p><EditableText fieldKey="aboutText2" multiline /></p>
-            </motion.div>
-            <motion.div className="about-img" variants={fadeUp}>
-              <EditableImage fieldKey="aboutImage" alt="Portret Coach" />
             </motion.div>
           </motion.div>
         </div>
@@ -335,8 +329,10 @@ function App() {
             
             <div className="footer-links">
               <a href="#home">Home</a>
-              <a href="#coaching">Diensten</a>
               <a href="#over-mij">Over Mij</a>
+              <a href="#visie">Mijn visie</a>
+              <a href="#werk-met-mij">Werk met mij</a>
+              <a href="#aanbod">Aanbod</a>
               <a href="#contact">Contact</a>
             </div>
 
