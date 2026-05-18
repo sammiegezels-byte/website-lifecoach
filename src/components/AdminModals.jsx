@@ -111,6 +111,19 @@ export function AdminModals() {
 
             <h4 style={{marginTop: '2rem', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem'}}>Overige Instellingen</h4>
 
+            <div style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px'}}>
+              <input 
+                type="checkbox" 
+                id="animationsEnabled"
+                checked={content.animationsEnabled !== false}
+                onChange={(e) => updateContent('animationsEnabled', e.target.checked)}
+                style={{width: '20px', height: '20px', cursor: 'pointer'}}
+              />
+              <label htmlFor="animationsEnabled" style={{...labelStyle, marginBottom: 0, cursor: 'pointer'}}>
+                Coole scroll-animaties inschakelen
+              </label>
+            </div>
+
             <div style={{marginBottom: '1.5rem'}}>
               <label style={labelStyle}>Nieuwe Pincode (4 tot 8 cijfers)</label>
               <input 

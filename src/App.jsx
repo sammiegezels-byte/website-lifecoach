@@ -27,27 +27,38 @@ const LinkedinIcon = () => (
   </svg>
 );
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-};
+const useAnimations = () => {
+  const { content } = useCMS();
+  const isEnabled = content.animationsEnabled !== false;
+  
+  const variants = isEnabled ? {
+    fadeUp: { hidden: { opacity: 0, y: 50, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, type: "spring", bounce: 0.4 } } },
+    slideInLeft: { hidden: { opacity: 0, x: -60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.8, type: "spring", bounce: 0.3 } } },
+    slideInRight: { hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.8, type: "spring", bounce: 0.3 } } },
+    popIn: { hidden: { opacity: 0, scale: 0.8, rotate: -5 }, visible: { opacity: 1, scale: 1, rotate: 0, transition: { type: "spring", bounce: 0.5, duration: 0.8 } } },
+    staggerContainer: { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }
+  } : {
+    fadeUp: { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } },
+    slideInLeft: { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } },
+    slideInRight: { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } },
+    popIn: { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } } },
+    staggerContainer: { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.2 } } }
+  };
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.2 }
-  }
+  const viewportProps = isEnabled ? { once: false, amount: 0.2 } : { once: true, margin: "-100px" };
+
+  return { variants, viewportProps, isEnabled };
 };
 
 // --- Extracted Components for Sections ---
 
 const HeroSection = () => {
   const { content, updateContent, isAdmin } = useCMS();
+  const { variants } = useAnimations();
   return (
     <section id="home" className="hero" style={{ backgroundImage: `url(${content.heroImage})` }}>
       <div className="container">
-        <motion.div className="hero-content" initial="hidden" animate="visible" variants={fadeUp}>
+        <motion.div className="hero-content" initial="hidden" animate="visible" variants={variants.popIn}>
           <h1><EditableText fieldKey="heroTitle" /></h1>
           <p><EditableText fieldKey="heroSubtitle" /></p>
           <a href="#contact" className="btn" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="heroBtnText" /></a>
@@ -72,16 +83,17 @@ const HeroSection = () => {
 };
 
 const AboutSection = () => {
+  const { variants, viewportProps } = useAnimations();
   return (
     <section id="over-mij" className="about section-padding">
       <div className="container">
-        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
-          <motion.div className="about-text" variants={fadeUp}>
+        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.staggerContainer}>
+          <motion.div className="about-text" variants={variants.slideInLeft}>
             <h2><EditableText fieldKey="aboutTitle" /></h2>
             <p><EditableText fieldKey="aboutText1" multiline /></p>
             <p><EditableText fieldKey="aboutText2" multiline /></p>
           </motion.div>
-          <motion.div className="about-img" variants={fadeUp}>
+          <motion.div className="about-img" variants={variants.slideInRight}>
             <EditableImage fieldKey="aboutImage" alt="Portret Coach" />
           </motion.div>
         </motion.div>
@@ -92,14 +104,15 @@ const AboutSection = () => {
 
 const ConsultationSection = () => {
   const { isAdmin } = useCMS();
+  const { variants, viewportProps } = useAnimations();
   return (
     <section id="werk-met-mij" className="consultation section-padding">
       <div className="container">
-        <motion.div className="consultation-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
-          <motion.div className="consultation-img" variants={fadeUp}>
+        <motion.div className="consultation-grid" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.staggerContainer}>
+          <motion.div className="consultation-img" variants={variants.slideInLeft}>
             <EditableImage fieldKey="consultationImage" alt="Gratis Consultatie" />
           </motion.div>
-          <motion.div className="consultation-text" variants={fadeUp}>
+          <motion.div className="consultation-text" variants={variants.slideInRight}>
             <h2><EditableText fieldKey="consultationTitle" /></h2>
             <p><EditableText fieldKey="consultationText" multiline /></p>
             <a href="#contact" className="btn btn-outline" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="consultationBtnText" /></a>
@@ -112,14 +125,16 @@ const ConsultationSection = () => {
 
 const ServicesSection = () => {
   const { isAdmin } = useCMS();
+  const { variants, viewportProps, isEnabled } = useAnimations();
+  const hoverAnim = isEnabled ? { y: -10, scale: 1.02 } : {};
   return (
     <section id="aanbod" className="services section-padding">
       <div className="container">
-        <motion.h2 className="services-title" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+        <motion.h2 className="services-title" initial="hidden" whileInView="visible" viewport={{ ...viewportProps, amount: 0.5 }} variants={variants.fadeUp}>
           <EditableText fieldKey="servicesTitle" />
         </motion.h2>
-        <motion.div className="services-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}>
-          <motion.div className="service-card" variants={fadeUp}>
+        <motion.div className="services-grid" initial="hidden" whileInView="visible" viewport={{ ...viewportProps, amount: 0.1 }} variants={variants.staggerContainer}>
+          <motion.div className="service-card" whileHover={hoverAnim} variants={variants.popIn}>
             <div className="service-icon"><Compass size={32} /></div>
             <div className="service-img-wrapper origin-right">
               <EditableImage fieldKey="card1Image" alt="Levensrichting" />
@@ -128,7 +143,7 @@ const ServicesSection = () => {
             <p><EditableText fieldKey="card1Text" multiline /></p>
             <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
           </motion.div>
-          <motion.div className="service-card" variants={fadeUp}>
+          <motion.div className="service-card" whileHover={hoverAnim} variants={variants.popIn}>
             <div className="service-icon"><Heart size={32} /></div>
             <div className="service-img-wrapper origin-center">
               <EditableImage fieldKey="card2Image" alt="Gezin & Relaties" />
@@ -137,7 +152,7 @@ const ServicesSection = () => {
             <p><EditableText fieldKey="card2Text" multiline /></p>
             <a href="#contact" className="btn btn-outline" style={{width: '100%'}} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesBtnText" /></a>
           </motion.div>
-          <motion.div className="service-card" variants={fadeUp}>
+          <motion.div className="service-card" whileHover={hoverAnim} variants={variants.popIn}>
             <div className="service-icon"><TrendingUp size={32} /></div>
             <div className="service-img-wrapper origin-left">
               <EditableImage fieldKey="card3Image" alt="1:1 Life Coaching" />
@@ -154,11 +169,12 @@ const ServicesSection = () => {
 
 const ContactSection = () => {
   const { content, updateContent, isAdmin } = useCMS();
+  const { variants, viewportProps } = useAnimations();
   return (
     <section id="contact" className="contact section-padding" style={{ backgroundImage: `url(${content.contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', position: 'relative' }}>
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 250, 247, 0.6)' }}></div>
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <motion.div className="contact-container" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+        <motion.div className="contact-container" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.fadeUp}>
           <h2><EditableText fieldKey="contactTitle" /></h2>
           <p><EditableText fieldKey="contactSubtitle" /></p>
           <form className="contact-form" action="https://api.web3forms.com/submit" method="POST">
@@ -201,6 +217,7 @@ const ContactSection = () => {
 
 const ParallaxSection = ({ id, imageKey, quoteKey }) => {
   const { content, updateContent, updateMultiple, isAdmin } = useCMS();
+  const { variants, viewportProps } = useAnimations();
 
   const handleRemove = () => {
     if (window.confirm("Zeker dat je deze parallax wilt verwijderen?")) {
@@ -218,7 +235,7 @@ const ParallaxSection = ({ id, imageKey, quoteKey }) => {
       )}
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.4)' }}></div>
       <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-        <motion.blockquote initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)', color: 'white', margin: 0 }}>
+        <motion.blockquote initial="hidden" whileInView="visible" viewport={{ ...viewportProps, amount: 0.3 }} variants={variants.popIn} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)', color: 'white', margin: 0 }}>
           <EditableText fieldKey={quoteKey} />
         </motion.blockquote>
         {isAdmin && (
@@ -242,6 +259,7 @@ const ParallaxSection = ({ id, imageKey, quoteKey }) => {
 
 const CustomSection = ({ sectionId }) => {
   const { content, updateMultiple, isAdmin } = useCMS();
+  const { variants, viewportProps } = useAnimations();
   
   const handleRemove = () => {
     if (window.confirm("Zeker dat je deze sectie wilt verwijderen?")) {
@@ -259,12 +277,12 @@ const CustomSection = ({ sectionId }) => {
         </button>
       )}
       <div className="container">
-        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
-          <motion.div className="about-text" variants={fadeUp}>
+        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.staggerContainer}>
+          <motion.div className="about-text" variants={variants.slideInLeft}>
             <h2><EditableText fieldKey={`customTitle_${sectionId}`} /></h2>
             <p><EditableText fieldKey={`customText_${sectionId}`} multiline /></p>
           </motion.div>
-          <motion.div className="about-img" variants={fadeUp}>
+          <motion.div className="about-img" variants={variants.slideInRight}>
             <EditableImage fieldKey={`customImage_${sectionId}`} alt="Custom" />
           </motion.div>
         </motion.div>
@@ -356,6 +374,15 @@ function App() {
     if (custom) return content[`customTitle_${id}`] || 'Nieuwe Pagina';
     return null;
   };
+
+  useEffect(() => {
+    // Migration: insert parallaxes if the user has the old default section order
+    if (content.sectionOrder && content.sectionOrder.join(',') === 'home,over-mij,visie,werk-met-mij,aanbod,contact') {
+      updateMultiple({
+        sectionOrder: ['home', 'over-mij', 'visie', 'parallax_1', 'werk-met-mij', 'parallax_2', 'aanbod', 'contact']
+      });
+    }
+  }, [content.sectionOrder, updateMultiple]);
 
   return (
     <div className="app">

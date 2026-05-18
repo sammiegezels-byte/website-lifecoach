@@ -45,6 +45,7 @@ const defaultContent = {
   themeHeadingFont: "Playfair Display",
   themeBodyFont: "Inter",
   themeColor: "#8FAF8F",
+  animationsEnabled: true,
   sectionOrder: ['home', 'over-mij', 'visie', 'werk-met-mij', 'aanbod', 'contact'],
   customSections: []
 };
