@@ -342,15 +342,6 @@ function App() {
     let insertIdx = newOrder.indexOf('contact');
     if (insertIdx === -1) insertIdx = newOrder.length;
 
-    // Automatisch een parallax toevoegen als deze nog niet op de pagina staat
-    if (!newOrder.includes('parallax_1')) {
-      newOrder.splice(insertIdx, 0, 'parallax_1');
-      insertIdx++;
-    } else if (!newOrder.includes('parallax_2')) {
-      newOrder.splice(insertIdx, 0, 'parallax_2');
-      insertIdx++;
-    }
-    
     newOrder.splice(insertIdx, 0, newId);
 
     const newCustoms = [...(content.customSections || []), { id: newId }];
@@ -363,26 +354,33 @@ function App() {
     });
   };
 
+  const addParallaxSection = () => {
+    const newId = 'parallax_' + Date.now();
+    const newOrder = [...sectionOrder];
+    
+    let insertIdx = newOrder.indexOf('contact');
+    if (insertIdx === -1) insertIdx = newOrder.length;
+    
+    newOrder.splice(insertIdx, 0, newId);
+    
+    updateMultiple({
+      sectionOrder: newOrder,
+      [`${newId}Image`]: "/images/parallax_1.png",
+      [`${newId}Quote`]: "Nieuwe inspirerende quote hier."
+    });
+  };
+
   const getMenuLabel = (id) => {
     if (id === 'home') return 'Home';
     if (id === 'over-mij') return 'Over Mij';
     if (id === 'visie') return 'Mijn visie';
     if (id === 'werk-met-mij') return 'Werk met mij';
     if (id === 'aanbod') return 'Aanbod';
-    if (id === 'contact' || id === 'parallax_1' || id === 'parallax_2') return null;
+    if (id === 'contact' || id.startsWith('parallax')) return null;
     const custom = (content.customSections || []).find(s => s.id === id);
     if (custom) return content[`customTitle_${id}`] || 'Nieuwe Pagina';
     return null;
   };
-
-  useEffect(() => {
-    // Migration: insert parallaxes if the user has the old default section order
-    if (content.sectionOrder && content.sectionOrder.join(',') === 'home,over-mij,visie,werk-met-mij,aanbod,contact') {
-      updateMultiple({
-        sectionOrder: ['home', 'over-mij', 'visie', 'parallax_1', 'werk-met-mij', 'parallax_2', 'aanbod', 'contact']
-      });
-    }
-  }, [content.sectionOrder, updateMultiple]);
 
   return (
     <div className="app">
@@ -436,6 +434,7 @@ function App() {
             case 'parallax_2': return <ParallaxSection key={id} id={id} imageKey="parallax2Image" quoteKey="parallax2Quote" />;
             default:
               if (id.startsWith('custom_')) return <CustomSection key={id} sectionId={id} />;
+              if (id.startsWith('parallax_')) return <ParallaxSection key={id} id={id} imageKey={`${id}Image`} quoteKey={`${id}Quote`} />;
               return null;
           }
         })}
@@ -445,9 +444,12 @@ function App() {
       <footer>
         <div className="container">
           {isAdmin && (
-             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+             <div style={{ textAlign: 'center', marginBottom: '3rem', display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <button className="btn" onClick={addCustomSection} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '1rem 2rem' }}>
-                  <Plus size={20} /> Extra Pagina Toevoegen
+                  <Plus size={20} /> Nieuwe Pagina
+                </button>
+                <button className="btn btn-outline" onClick={addParallaxSection} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '1rem 2rem' }}>
+                  <Plus size={20} /> Nieuwe Foto
                 </button>
              </div>
           )}
