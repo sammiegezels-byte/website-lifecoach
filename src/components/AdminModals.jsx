@@ -289,9 +289,8 @@ export function AdminModals() {
   const basePages = [
     { id: 'hero', title: 'Home (Hero)' },
     { id: 'over', title: 'Over Mij' },
-    { id: 'consult', title: 'Werk Met Mij' },
-    { id: 'aanbod', title: 'Aanbod' },
-    { id: 'visie', title: 'Visie (Parallax)' },
+    { id: 'consult', title: 'Mijn Visie' },
+    { id: 'aanbod', title: 'Werk Met Mij' },
     { id: 'contact', title: 'Contact' },
     { id: 'footer', title: 'Footer & Privacy' },
   ];
@@ -348,7 +347,7 @@ export function AdminModals() {
     switch (id) {
       case 'hero': return (
         <>
-          <VideoUpload label="Hero Achtergrond Video (Optioneel)" field="heroBgVideo" val={content.heroBgVideo} update={updateContent} />
+          <VideoUpload label="Hero Achtergrond Video (Optioneel)" field="heroBgVideo" val={content.heroBgVideo} update={updateContent} invertField="invertVideo_hero" invertVal={content.invertVideo_hero} />
           <ImageUpload label="Hero Achtergrond" field="heroImage" val={content.heroImage} update={updateContent} />
           <Field label="Titel" field="heroTitle" val={content.heroTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Subtitel" field="heroSubtitle" val={content.heroSubtitle} update={updateContent} multiline content={content} fontType="body" />
@@ -358,7 +357,7 @@ export function AdminModals() {
       case 'over': return (
         <>
           <GlowSettings sectionId="over" content={content} updateContent={updateContent} />
-          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_over" val={content.customBgVideo_over} update={updateContent} />
+          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_over" val={content.customBgVideo_over} update={updateContent} invertField="invertVideo_over" invertVal={content.invertVideo_over} />
           <ImageUpload label="Over Mij Portret" field="aboutImage" val={content.aboutImage} update={updateContent} />
           <Field label="Titel" field="aboutTitle" val={content.aboutTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Tekst" field="aboutText" val={content.aboutText} update={updateContent} multiline content={content} fontType="body" />
@@ -368,18 +367,21 @@ export function AdminModals() {
       case 'consult': return (
         <>
           <GlowSettings sectionId="consult" content={content} updateContent={updateContent} />
-          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_consult" val={content.customBgVideo_consult} update={updateContent} />
+          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_consult" val={content.customBgVideo_consult} update={updateContent} invertField="invertVideo_consult" invertVal={content.invertVideo_consult} />
           <ImageUpload label="Consultatie Afbeelding" field="consultationImage" val={content.consultationImage} update={updateContent} />
           <Field label="Titel" field="consultationTitle" val={content.consultationTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Tekst" field="consultationText" val={content.consultationText} update={updateContent} multiline content={content} fontType="body" />
           <Field label="Knop Tekst" field="consultationBtnText" val={content.consultationBtnText} update={updateContent} content={content} fontType="body" />
+          <div style={dividerStyle}></div>
+          <ImageUpload label="Visie Achtergrond (Parallax)" field="quoteImage" val={content.quoteImage} update={updateContent} />
+          <Field label="Visie Tekst (Quote)" field="quoteText" val={content.quoteText} update={updateContent} multiline content={content} fontType="body" />
           <BlockEditor sectionId="consult" content={content} updateContent={updateContent} />
         </>
       );
       case 'aanbod': return (
         <>
           <GlowSettings sectionId="aanbod" content={content} updateContent={updateContent} />
-          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_aanbod" val={content.customBgVideo_aanbod} update={updateContent} />
+          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_aanbod" val={content.customBgVideo_aanbod} update={updateContent} invertField="invertVideo_aanbod" invertVal={content.invertVideo_aanbod} />
           <Field label="Hoofdtitel Aanbod" field="servicesTitle" val={content.servicesTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Hoofd Knop Tekst" field="servicesMainBtnText" val={content.servicesMainBtnText} update={updateContent} content={content} fontType="body" />
           <VideoUpload label="Hoofdvideo Aanbod" field="servicesMainVideo" val={content.servicesMainVideo} update={updateContent} />
@@ -399,16 +401,10 @@ export function AdminModals() {
           <BlockEditor sectionId="aanbod" content={content} updateContent={updateContent} />
         </>
       );
-      case 'visie': return (
-        <>
-          <ImageUpload label="Visie Achtergrond" field="quoteImage" val={content.quoteImage} update={updateContent} />
-          <Field label="Visie Tekst (Quote)" field="quoteText" val={content.quoteText} update={updateContent} multiline content={content} fontType="body" />
-        </>
-      );
       case 'contact': return (
         <>
           <GlowSettings sectionId="contact" content={content} updateContent={updateContent} />
-          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_contact" val={content.customBgVideo_contact} update={updateContent} />
+          <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_contact" val={content.customBgVideo_contact} update={updateContent} invertField="invertVideo_contact" invertVal={content.invertVideo_contact} />
           <ImageUpload label="Contact Achtergrond" field="contactImage" val={content.contactImage} update={updateContent} />
           <Field label="Titel" field="contactTitle" val={content.contactTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Subtitel" field="contactSubtitle" val={content.contactSubtitle} update={updateContent} multiline content={content} fontType="body" />
@@ -458,7 +454,7 @@ export function AdminModals() {
         return (
           <>
             <GlowSettings sectionId={id} content={content} updateContent={updateContent} />
-            <VideoUpload label="Achtergrond Video (Fullscreen)" field={`customBgVideo_${id}`} val={content[`customBgVideo_${id}`]} update={updateContent} />
+            <VideoUpload label="Achtergrond Video (Fullscreen)" field={`customBgVideo_${id}`} val={content[`customBgVideo_${id}`]} update={updateContent} invertField={`invertVideo_${id}`} invertVal={content[`invertVideo_${id}`]} />
             <Field label="Paginatitel" field={`customTitle_${id}`} val={content[`customTitle_${id}`]} update={updateContent} content={content} fontType="heading" />
             <ImageUpload label="Optionele Afbeelding in Sectie" field={`customImage_${id}`} val={content[`customImage_${id}`]} update={updateContent} />
             <Field label="Tekst" field={`customText_${id}`} val={content[`customText_${id}`]} update={updateContent} multiline content={content} fontType="body" />
