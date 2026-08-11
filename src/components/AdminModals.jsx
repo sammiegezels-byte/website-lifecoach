@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useCMS, uploadToCloudinary } from '../cms';
-import { LogOut, X, Plus, Trash2, ArrowUp, ArrowDown, MoveUp, MoveDown, Settings, ChevronLeft, Check, Image as ImageIcon, Calendar, RefreshCw, Archive, Video } from 'lucide-react';
+import { LogOut, X, Plus, Trash2, ArrowUp, ArrowDown, MoveUp, MoveDown, Settings, ChevronLeft, Check, Image as ImageIcon, Calendar, RefreshCw, Archive, Video, Folder } from 'lucide-react';
+import { AdminDossiers } from './AdminDossiers';
 
 const FONTS = [
   'Roboto', 'Open Sans', 'Inter', 'Montserrat', 'Poppins', 'Lato', 
@@ -10,7 +11,7 @@ const FONTS = [
   'Outfit', 'DM Sans', 'Plus Jakarta Sans', 'Cinzel'
 ];
 
-const RichTextEditor = ({ value, onChange, multiline }) => {
+export const RichTextEditor = ({ value, onChange, multiline }) => {
   const editorRef = useRef(null);
   
   useEffect(() => {
@@ -271,6 +272,7 @@ export function AdminModals() {
   const [showSettings, setShowSettings] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
   const [showAgenda, setShowAgenda] = useState(false);
+  const [showDossiers, setShowDossiers] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -560,6 +562,7 @@ export function AdminModals() {
               ) : 'Beheer'}
             </h2>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+              <button onClick={() => setShowDossiers(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#f39c12'}} title="Dossierbeheer"><Folder size={18}/></button>
               <button onClick={() => setShowAgenda(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#2ecc71'}} title="Agenda & Boekingen"><Calendar size={18}/></button>
               {content.trashedSections && content.trashedSections.length > 0 && (
                 <button onClick={() => setShowTrash(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#e74c3c'}} title="Prullenbak"><Archive size={18}/></button>
@@ -601,6 +604,10 @@ export function AdminModals() {
 
           {showAgenda && (
             <BookingAgendaModal content={content} updateContent={updateContent} close={() => setShowAgenda(false)} />
+          )}
+
+          {showDossiers && (
+            <AdminDossiers close={() => setShowDossiers(false)} />
           )}
         </div>
       )}
