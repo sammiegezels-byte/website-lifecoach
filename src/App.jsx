@@ -779,28 +779,24 @@ function App() {
       )}
       
       {/* NAVIGATIEBALK */}
-      <nav className="navbar" style={{ padding: isScrolled ? '1rem 0' : '1.5rem 0' }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>
+      <nav className="navbar" style={{ padding: isScrolled ? '0.5rem 0' : '1rem 0' }}>
+        <div className="container nav-container">
           <div className="logo" style={{ display: 'flex', alignItems: 'center' }}>
             {content.logoVideo ? (
-              <video src={content.logoVideo} autoPlay loop muted playsInline style={{ 
-                width: '300px',
-                height: 'auto', 
-                maxWidth: '100%', 
+              <video className="header-logo-video" src={content.logoVideo} autoPlay loop muted playsInline style={{ 
                 objectFit: content.logoCrop ? 'cover' : 'contain', 
                 aspectRatio: content.logoCrop ? '4/1' : 'auto',
                 WebkitMaskImage: content.logoCrop ? 'radial-gradient(ellipse 90% 80% at 50% 50%, black 50%, transparent 100%)' : 'none',
                 filter: 'invert(1)', 
                 mixBlendMode: 'multiply',
-                transform: `scale(${content.logoScaleHeader ?? content.logoScale ?? 1.0}) translateX(${content.logoOffsetXHeader || 0}px)`,
-                transformOrigin: 'left center'
+                transform: `scale(${content.logoScaleHeader ?? content.logoScale ?? 1.0}) translateX(${content.logoOffsetXHeader || 0}px)`
               }} />
             ) : (
               <EditableText fieldKey="footerLogo" />
             )}
           </div>
           
-          <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`} style={{ display: 'flex', gap: '2rem', alignItems: 'center', justifyContent: 'center' }}>
+          <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
             {sectionOrder.map((id, index) => {
               const label = getMenuLabel(id);
               if (!label && !isAdmin) return null;
@@ -809,13 +805,16 @@ function App() {
               if (!label) return null;
 
               return (
-                <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <a href={`#${id}`} className={activeSection === id ? 'active' : ''}>{label}</a>
+                <div key={id} className={`nav-item ${activeSection === id ? 'is-active' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <a href={`#${id}`} className={activeSection === id ? 'active' : ''} onClick={() => setMobileMenuOpen(false)}>{label}</a>
                 </div>
               );
             })}
             
-            <a href="#contact" className="btn" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }} onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="navBtnText" /></a>
+            <a href="#contact" className="btn nav-item" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }} onClick={(e) => {
+              setMobileMenuOpen(false);
+              if (isAdmin) e.preventDefault();
+            }}><EditableText fieldKey="navBtnText" /></a>
           </div>
 
           <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
