@@ -194,9 +194,9 @@ const AboutSection = () => {
           
           <motion.div variants={cardVariants} style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
              {!isExpanded ? (
-               <button className="btn" onClick={() => setIsExpanded(true)}>Klik hier voor meer</button>
+               <button className="btn" onClick={() => setIsExpanded(true)}><EditableText fieldKey="aboutBtnMoreText" /></button>
              ) : (
-               <button className="btn btn-outline" onClick={() => setIsExpanded(false)}>Minder weergeven</button>
+               <button className="btn btn-outline" onClick={() => setIsExpanded(false)}><EditableText fieldKey="aboutBtnLessText" /></button>
              )}
           </motion.div>
 
@@ -261,9 +261,9 @@ const ConsultationSection = () => {
           
           <motion.div variants={cardVariants} style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
              {!isExpanded ? (
-               <button className="btn" onClick={() => setIsExpanded(true)}>Klik hier voor mijn visie</button>
+               <button className="btn" onClick={() => setIsExpanded(true)}><EditableText fieldKey="consultationBtnMoreText" /></button>
              ) : (
-               <button className="btn btn-outline" onClick={() => setIsExpanded(false)}>Verberg mijn visie</button>
+               <button className="btn btn-outline" onClick={() => setIsExpanded(false)}><EditableText fieldKey="consultationBtnLessText" /></button>
              )}
           </motion.div>
 
@@ -401,8 +401,8 @@ const ServicesSection = () => {
               transition={{ delay: 11.5, duration: 1 }}
               style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '4rem', flexWrap: 'wrap' }}
             >
-              <a href="#contact" className="btn" onClick={(e) => isAdmin && e.preventDefault()}>Interesse</a>
-              <button className="btn btn-outline" onClick={() => setIsOpen(false)}>Minder info</button>
+              <a href="#contact" className="btn" onClick={(e) => isAdmin && e.preventDefault()}><EditableText fieldKey="servicesInterestBtnText" /></a>
+              <button className="btn btn-outline" onClick={() => setIsOpen(false)}><EditableText fieldKey="servicesLessBtnText" /></button>
             </motion.div>
           </>
         )}
@@ -625,7 +625,7 @@ const ContactSection = ({ setShowPrivacy }) => {
               <textarea name="message" placeholder="Jouw bericht" required></textarea>
             </div>
             <div className="full-width" style={{ textAlign: 'center', marginTop: '1rem' }}>
-              <button type="submit" className="btn">Verstuur Bericht</button>
+              <button type="submit" className="btn"><EditableText fieldKey="contactSubmitBtnText" /></button>
               {content.privacyDisclaimer && (
                 <div style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#666' }}>
                   Jouw gegevens worden vertrouwelijk behandeld en nooit gedeeld met derden.{' '}

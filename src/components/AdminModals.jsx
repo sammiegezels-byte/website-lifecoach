@@ -362,7 +362,10 @@ export function AdminModals() {
           <VideoUpload label="Achtergrond Video (Fullscreen)" field="customBgVideo_over" val={content.customBgVideo_over} update={updateContent} invertField="invertVideo_over" invertVal={content.invertVideo_over} />
           <ImageUpload label="Over Mij Portret" field="aboutImage" val={content.aboutImage} update={updateContent} />
           <Field label="Titel" field="aboutTitle" val={content.aboutTitle} update={updateContent} content={content} fontType="heading" />
-          <Field label="Tekst" field="aboutText" val={content.aboutText} update={updateContent} multiline content={content} fontType="body" />
+          <Field label="Verhaal Deel 1" field="aboutText1" val={content.aboutText1} update={updateContent} multiline content={content} fontType="body" />
+          <Field label="Verhaal Deel 2" field="aboutText2" val={content.aboutText2} update={updateContent} multiline content={content} fontType="body" />
+          <Field label="Knop 'Lees meer' Tekst" field="aboutBtnMoreText" val={content.aboutBtnMoreText} update={updateContent} content={content} fontType="body" />
+          <Field label="Knop 'Minder tonen' Tekst" field="aboutBtnLessText" val={content.aboutBtnLessText} update={updateContent} content={content} fontType="body" />
           <BlockEditor sectionId="about" content={content} updateContent={updateContent} />
         </>
       );
@@ -374,6 +377,8 @@ export function AdminModals() {
           <Field label="Titel" field="consultationTitle" val={content.consultationTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Tekst" field="consultationText" val={content.consultationText} update={updateContent} multiline content={content} fontType="body" />
           <Field label="Knop Tekst" field="consultationBtnText" val={content.consultationBtnText} update={updateContent} content={content} fontType="body" />
+          <Field label="Knop 'Visie bekijken' Tekst" field="consultationBtnMoreText" val={content.consultationBtnMoreText} update={updateContent} content={content} fontType="body" />
+          <Field label="Knop 'Visie verbergen' Tekst" field="consultationBtnLessText" val={content.consultationBtnLessText} update={updateContent} content={content} fontType="body" />
           <div style={dividerStyle}></div>
           <ImageUpload label="Visie Achtergrond (Parallax)" field="quoteImage" val={content.quoteImage} update={updateContent} />
           <Field label="Visie Tekst (Quote)" field="quoteText" val={content.quoteText} update={updateContent} multiline content={content} fontType="body" />
@@ -400,6 +405,8 @@ export function AdminModals() {
           <ImageUpload label="Dienst 3 Foto" field="card3Image" val={content.card3Image} update={updateContent} />
           <Field label="Dienst 3 Titel" field="card3Title" val={content.card3Title} update={updateContent} content={content} fontType="heading" />
           <Field label="Dienst 3 Tekst" field="card3Text" val={content.card3Text} update={updateContent} multiline content={content} fontType="body" />
+          <Field label="Knop 'Interesse' (onderaan) Tekst" field="servicesInterestBtnText" val={content.servicesInterestBtnText} update={updateContent} content={content} fontType="body" />
+          <Field label="Knop 'Minder info' (onderaan) Tekst" field="servicesLessBtnText" val={content.servicesLessBtnText} update={updateContent} content={content} fontType="body" />
           <BlockEditor sectionId="aanbod" content={content} updateContent={updateContent} />
         </>
       );
@@ -410,6 +417,7 @@ export function AdminModals() {
           <ImageUpload label="Contact Achtergrond" field="contactImage" val={content.contactImage} update={updateContent} />
           <Field label="Titel" field="contactTitle" val={content.contactTitle} update={updateContent} content={content} fontType="heading" />
           <Field label="Subtitel" field="contactSubtitle" val={content.contactSubtitle} update={updateContent} multiline content={content} fontType="body" />
+          <Field label="Verzendknop Tekst" field="contactSubmitBtnText" val={content.contactSubmitBtnText} update={updateContent} content={content} fontType="body" />
           <AvailabilityEditor content={content} updateContent={updateContent} />
           <QuestionsEditor content={content} updateContent={updateContent} />
           <Field label="Web3Forms Access Key" field="web3formsKey" val={content.web3formsKey} update={updateContent} type="plain" />

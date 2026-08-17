@@ -61,7 +61,14 @@ const defaultContent = {
   themeColor: "#8FAF8F",
   animationsEnabled: true,
   sectionOrder: ['home', 'over-mij', 'visie', 'werk-met-mij', 'aanbod', 'contact'],
-  customSections: []
+  customSections: [],
+  aboutBtnMoreText: "Lees mijn verhaal",
+  aboutBtnLessText: "Minder weergeven",
+  consultationBtnMoreText: "ontdek mijn visie op ouderschap",
+  consultationBtnLessText: "Verberg mijn visie",
+  servicesInterestBtnText: "Ja, ik wil een gratis kennismaking",
+  servicesLessBtnText: "Minder info",
+  contactSubmitBtnText: "Verstuur Bericht"
 };
 
 export const uploadToCloudinary = async (file, resourceType = 'auto') => {
@@ -248,7 +255,7 @@ export const useCMS = () => useContext(CMSContext);
 
 export function EditableText({ fieldKey, type = "text", multiline = false, className = "", style = {} }) {
   const { content } = useCMS();
-  const raw = content[fieldKey] || "";
+  const raw = content[fieldKey] !== undefined && content[fieldKey] !== "" ? content[fieldKey] : (defaultContent[fieldKey] || "");
   const customFont = content[`${fieldKey}Font`];
   const finalStyle = customFont ? { ...style, fontFamily: `"${customFont}", sans-serif` } : style;
 
