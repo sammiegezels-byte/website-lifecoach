@@ -774,7 +774,13 @@ function App() {
   const { content, updateMultiple, isAdmin, showLogin, setShowLogin } = useCMS();
 
   useEffect(() => {
-    if (content.seoTitle) document.title = content.seoTitle;
+    if (content.seoTitle) {
+      document.title = content.seoTitle;
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.content = content.seoTitle;
+      const twTitle = document.querySelector('meta[name="twitter:title"]');
+      if (twTitle) twTitle.content = content.seoTitle;
+    }
     
     if (content.seoDescription) {
       let meta = document.querySelector('meta[name="description"]');
@@ -784,8 +790,66 @@ function App() {
         document.head.appendChild(meta);
       }
       meta.content = content.seoDescription;
+
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.content = content.seoDescription;
+      const twDesc = document.querySelector('meta[name="twitter:description"]');
+      if (twDesc) twDesc.content = content.seoDescription;
     }
-  }, [content.seoTitle, content.seoDescription]);
+
+    if (content.seoRegion) {
+      const geoPlacename = document.querySelector('meta[name="geo.placename"]');
+      if (geoPlacename) geoPlacename.content = content.seoRegion;
+    }
+
+    // Dynamic JSON-LD Schema Update for AI Crawlers
+    const schemaScript = document.getElementById('schema-structured-data');
+    if (schemaScript) {
+      try {
+        const schemaData = {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "ProfessionalService",
+              "@id": "https://oudercoachlindsay.be/#business",
+              "name": content.seoTitle || "Oudercoach Lindsay Battiau",
+              "image": content.heroImage ? (content.heroImage.startsWith('http') ? content.heroImage : `https://oudercoachlindsay.be${content.heroImage}`) : "/logo.png",
+              "description": content.seoDescription || "Professionele oudercoaching en life coaching op maat voor ouders, kinderen, jongeren en gezinnen.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "BE",
+                "addressRegion": content.seoRegion || "Vlaanderen"
+              },
+              "areaServed": [
+                {
+                  "@type": "AdministrativeArea",
+                  "name": content.seoRegion || "Vlaanderen"
+                },
+                {
+                  "@type": "Country",
+                  "name": "België"
+                }
+              ],
+              "knowsAbout": (content.seoKeywords || "Ouderschap, Opvoeding, Gezinsdynamiek, Emotionele begeleiding, Life Coaching").split(',').map(s => s.trim())
+            },
+            {
+              "@type": "Person",
+              "@id": "https://oudercoachlindsay.be/#person",
+              "name": "Lindsay Battiau",
+              "jobTitle": "Oudercoach & Life Coach",
+              "description": content.aboutText1 || "Ervaren oudercoach met passie voor verbinding, rust in huis en opvoedingsondersteuning.",
+              "worksFor": {
+                "@id": "https://oudercoachlindsay.be/#business"
+              }
+            }
+          ]
+        };
+        schemaScript.textContent = JSON.stringify(schemaData, null, 2);
+      } catch (err) {
+        console.error("Error updating schema", err);
+      }
+    }
+  }, [content.seoTitle, content.seoDescription, content.seoRegion, content.seoKeywords, content.heroImage, content.aboutText1]);
 
   useEffect(() => {
     const handleScroll = () => {

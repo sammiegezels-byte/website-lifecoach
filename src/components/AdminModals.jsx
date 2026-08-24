@@ -509,12 +509,14 @@ export function AdminModals() {
       </div>
 
       <div style={settingsSectionStyle}>
-        <h4 style={settingsTitleStyle}>SEO / Google (Zoekresultaten)</h4>
-        <Field label="Website Titel (Google Tabblad)" field="seoTitle" val={content.seoTitle} update={updateContent} type="plain" />
-        <Field label="Website Omschrijving (Google Zoekresultaten)" field="seoDescription" val={content.seoDescription} update={updateContent} type="plain" multiline={true} />
-        <p style={{color: '#888', fontSize: '0.8rem', marginTop: '-10px', fontStyle: 'italic'}}>
-          Tip: Hou dit tussen de 120 en 160 tekens. Let op: nadat je dit aanpast, kan het tot een week duren voordat Google de nieuwe tekst laat zien!
+        <h4 style={settingsTitleStyle}>SEO / GEO / AI & Google Zoekresultaten</h4>
+        <Field label="Website Titel (Google & AI Overviews)" field="seoTitle" val={content.seoTitle} update={updateContent} type="plain" />
+        <Field label="Website Omschrijving (Google Snippet)" field="seoDescription" val={content.seoDescription} update={updateContent} type="plain" multiline={true} />
+        <p style={{color: '#888', fontSize: '0.8rem', marginTop: '-10px', fontStyle: 'italic', marginBottom: '1.2rem'}}>
+          Tip: Hou de omschrijving tussen de 120 en 160 tekens voor de beste weergave.
         </p>
+        <Field label="Werkregio / Locatie (Lokale SEO / GEO)" field="seoRegion" val={content.seoRegion} update={updateContent} type="plain" />
+        <Field label="Belangrijkste Thema's / Zoekwoorden (voor AI engines, gescheiden door komma's)" field="seoKeywords" val={content.seoKeywords} update={updateContent} type="plain" multiline={true} />
       </div>
 
       <div style={settingsSectionStyle}>
