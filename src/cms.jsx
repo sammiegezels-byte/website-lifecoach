@@ -61,6 +61,8 @@ const defaultContent = {
   themeColor: "#8FAF8F",
   animationsEnabled: true,
   sectionOrder: ['home', 'over-mij', 'visie', 'werk-met-mij', 'aanbod', 'contact'],
+  seoTitle: "Oudercoach | Lindsay Battiau",
+  seoDescription: "Oudercoach Lindsay Battiau helpt ouders patronen te doorbreken voor meer rust in huis en verbinding. Plan een gratis kennismaking.",
   customSections: [],
   aboutBtnMoreText: "Lees mijn verhaal",
   aboutBtnLessText: "Minder weergeven",

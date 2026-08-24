@@ -507,6 +507,12 @@ export function AdminModals() {
       </div>
 
       <div style={settingsSectionStyle}>
+        <h4 style={settingsTitleStyle}>SEO / Google (Zoekresultaten)</h4>
+        <Field label="Website Titel (Google Tabblad)" field="seoTitle" val={content.seoTitle} update={updateContent} type="plain" />
+        <Field label="Website Omschrijving (Google Zoekresultaten)" field="seoDescription" val={content.seoDescription} update={updateContent} type="plain" multiline={true} />
+      </div>
+
+      <div style={settingsSectionStyle}>
         <h4 style={settingsTitleStyle}>Socials</h4>
         <Field label="Instagram" field="instagramLink" val={content.instagramLink} update={updateContent} type="plain" />
         <Field label="Facebook" field="facebookLink" val={content.facebookLink} update={updateContent} type="plain" />

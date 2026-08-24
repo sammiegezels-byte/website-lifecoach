@@ -706,6 +706,20 @@ function App() {
   const { content, updateMultiple, isAdmin, showLogin, setShowLogin } = useCMS();
 
   useEffect(() => {
+    if (content.seoTitle) document.title = content.seoTitle;
+    
+    if (content.seoDescription) {
+      let meta = document.querySelector('meta[name="description"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = "description";
+        document.head.appendChild(meta);
+      }
+      meta.content = content.seoDescription;
+    }
+  }, [content.seoTitle, content.seoDescription]);
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       
