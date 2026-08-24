@@ -70,6 +70,7 @@ const defaultContent = {
   consultationBtnLessText: "Verberg mijn visie",
   servicesInterestBtnText: "Ja, ik wil een gratis kennismaking",
   servicesLessBtnText: "Minder info",
+  servicesStepsBottomText: "",
   contactSubmitBtnText: "Verstuur Bericht"
 };
 

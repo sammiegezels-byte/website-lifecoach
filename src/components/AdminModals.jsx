@@ -405,6 +405,8 @@ export function AdminModals() {
           <ImageUpload label="Dienst 3 Foto" field="card3Image" val={content.card3Image} update={updateContent} />
           <Field label="Dienst 3 Titel" field="card3Title" val={content.card3Title} update={updateContent} content={content} fontType="heading" />
           <Field label="Dienst 3 Tekst" field="card3Text" val={content.card3Text} update={updateContent} multiline content={content} fontType="body" />
+          <div style={dividerStyle}></div>
+          <Field label="Extra Tekst onder de 3 stappen (Binnen stappenplan)" field="servicesStepsBottomText" val={content.servicesStepsBottomText} update={updateContent} multiline content={content} fontType="body" />
           <Field label="Knop 'Interesse' (onderaan) Tekst" field="servicesInterestBtnText" val={content.servicesInterestBtnText} update={updateContent} content={content} fontType="body" />
           <Field label="Knop 'Minder info' (onderaan) Tekst" field="servicesLessBtnText" val={content.servicesLessBtnText} update={updateContent} content={content} fontType="body" />
           <BlockEditor sectionId="aanbod" content={content} updateContent={updateContent} />
@@ -866,7 +868,7 @@ const BlockEditor = ({ sectionId, content, updateContent }) => {
     if (type === 'text') newBlock.text = 'Nieuwe tekst...';
     if (type === 'image') newBlock.url = '';
     if (type === 'accordion') { newBlock.title = 'Titel'; newBlock.content = 'Inhoud...'; }
-    if (type === 'button') { newBlock.label = 'Knop tekst'; newBlock.link = '#contact'; }
+    if (type === 'button') { newBlock.label = 'Knop tekst'; newBlock.link = '#contact'; newBlock.actionType = 'link'; newBlock.expandText = ''; }
     updateContent(blocksKey, [...blocks, newBlock]);
   };
 
@@ -983,10 +985,34 @@ const BlockEditor = ({ sectionId, content, updateContent }) => {
           )}
           {b.type === 'button' && (
             <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-              <div style={{display: 'flex', gap: '1rem', flexDirection: 'column'}}>
-                <input type="text" placeholder="Knop tekst" value={b.label || ''} onChange={e => updateBlock(b.id, {label: e.target.value})} style={inputStyle} />
-                <input type="text" placeholder="Link (bijv. #contact of https://...)" value={b.link || ''} onChange={e => updateBlock(b.id, {link: e.target.value})} style={inputStyle} />
+              <input type="text" placeholder="Knop tekst (bijv. Wanneer is coaching niet geschikt)" value={b.label || ''} onChange={e => updateBlock(b.id, {label: e.target.value})} style={inputStyle} />
+              
+              <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                <label style={{color: '#bbb', fontSize: '0.9rem'}}>Knop Actie:</label>
+                <select 
+                  value={b.actionType || (b.expandText ? 'expand' : 'link')} 
+                  onChange={e => updateBlock(b.id, {actionType: e.target.value})} 
+                  style={{...inputStyle, padding: '0.6rem', width: 'auto', minHeight: 'auto'}}
+                >
+                  <option value="link">Link openen (bijv. naar contact)</option>
+                  <option value="expand">Tekst uitklappen bij klikken</option>
+                </select>
               </div>
+
+              {(b.actionType === 'expand' || (!b.actionType && b.expandText)) ? (
+                <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                  <label style={{color: '#aaa', fontSize: '0.85rem'}}>Tekst die verschijnt als men op de knop klikt:</label>
+                  <textarea 
+                    placeholder="Typ hier de tekst die tevoorschijn komt..." 
+                    value={b.expandText || ''} 
+                    onChange={e => updateBlock(b.id, {expandText: e.target.value})} 
+                    style={{...inputStyle, minHeight: '120px', resize: 'vertical'}} 
+                  />
+                </div>
+              ) : (
+                <input type="text" placeholder="Link (bijv. #contact of https://...)" value={b.link || ''} onChange={e => updateBlock(b.id, {link: e.target.value})} style={inputStyle} />
+              )}
+
               <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
                 <label style={{color: '#bbb', fontSize: '0.9rem'}}>Uitlijning Knop:</label>
                 <select value={b.align || 'center'} onChange={e => updateBlock(b.id, {align: e.target.value})} style={{...inputStyle, padding: '0.6rem', width: 'auto', minHeight: 'auto'}}>

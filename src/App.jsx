@@ -28,6 +28,53 @@ const LinkedinIcon = () => (
   </svg>
 );
 
+const BlockButton = ({ b }) => {
+  const [expanded, setExpanded] = useState(false);
+  const isExpandType = b.actionType === 'expand' || (!b.link && b.expandText);
+
+  if (isExpandType) {
+    return (
+      <div style={{ textAlign: b.align || 'center', width: '100%' }}>
+        <button 
+          type="button" 
+          className="btn" 
+          onClick={() => setExpanded(!expanded)}
+          style={{ display: 'inline-block', fontSize: '1.1rem', padding: '1rem 3rem', cursor: 'pointer' }}
+        >
+          {b.label || 'Knop'}
+        </button>
+        {expanded && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: '1.5rem' }}
+            style={{ 
+              backgroundColor: '#fff', 
+              border: '1px solid #eee', 
+              borderRadius: '12px', 
+              padding: '2rem', 
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+              textAlign: 'left',
+              whiteSpace: 'pre-wrap',
+              lineHeight: '1.8',
+              maxWidth: '800px',
+              margin: '1.5rem auto 0 auto',
+              color: 'var(--color-text)'
+            }}
+          >
+            {b.expandText || b.text || 'Geen tekst ingesteld.'}
+          </motion.div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ textAlign: b.align || 'center' }}>
+      <a href={b.link || '#contact'} className="btn" style={{ display: 'inline-block', fontSize: '1.1rem', padding: '1rem 3rem' }}>{b.label || 'Knop'}</a>
+    </div>
+  );
+};
+
 const RenderBlocks = ({ blocks }) => {
   const { variants, viewportProps } = useAnimations();
   if (!blocks || blocks.length === 0) return null;
@@ -53,9 +100,7 @@ const RenderBlocks = ({ blocks }) => {
             </details>
           )}
           {b.type === 'button' && (
-            <div style={{ textAlign: b.align || 'center' }}>
-              <a href={b.link} className="btn" style={{ display: 'inline-block', fontSize: '1.1rem', padding: '1rem 3rem' }}>{b.label}</a>
-            </div>
+            <BlockButton b={b} />
           )}
         </motion.div>
       ))}
@@ -395,6 +440,29 @@ const ServicesSection = () => {
               <AnimatedServiceBlock icon={TrendingUp} imageKey="card3Image" titleKey="card3Title" textKey="card3Text" originClass="origin-left" />
             </motion.div>
             
+            {content.servicesStepsBottomText && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 10, duration: 0.8 }}
+                style={{ 
+                  backgroundColor: 'rgba(255,255,255,0.95)', 
+                  border: '1px solid #eaeaea',
+                  borderRadius: '16px', 
+                  padding: '2rem', 
+                  maxWidth: '850px', 
+                  margin: '3rem auto 0 auto',
+                  textAlign: 'left',
+                  lineHeight: '1.8',
+                  fontSize: '1.1rem',
+                  color: 'var(--color-text)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
+                }}
+              >
+                <EditableText fieldKey="servicesStepsBottomText" multiline />
+              </motion.div>
+            )}
+
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
