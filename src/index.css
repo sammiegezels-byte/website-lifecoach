@@ -694,6 +694,38 @@ footer {
   transform: translateY(-3px);
 }
 
+.nav-social-icons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.nav-social-icon {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  transition: var(--transition);
+}
+
+.nav-social-icon:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 992px) {
+  .nav-social-icons {
+    margin: 1rem 0;
+    justify-content: center;
+  }
+}
+
 .copyright {
   border-top: 1px solid rgba(255,255,255,0.1);
   padding-top: 2rem;

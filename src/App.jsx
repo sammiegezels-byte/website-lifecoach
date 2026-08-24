@@ -957,6 +957,24 @@ function App() {
               );
             })}
             
+            <div className="nav-social-icons">
+              {content.instagramLink && (
+                <a href={content.instagramLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="Instagram">
+                  <InstagramIcon />
+                </a>
+              )}
+              {content.facebookLink && (
+                <a href={content.facebookLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="Facebook">
+                  <FacebookIcon />
+                </a>
+              )}
+              {content.linkedinLink && (
+                <a href={content.linkedinLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="LinkedIn">
+                  <LinkedinIcon />
+                </a>
+              )}
+            </div>
+
             <a href="#contact" className="btn nav-item" style={{ padding: '0.8rem 1.5rem', fontSize: '0.8rem' }} onClick={(e) => {
               setMobileMenuOpen(false);
               if (isAdmin) e.preventDefault();
