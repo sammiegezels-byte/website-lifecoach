@@ -927,6 +927,30 @@ function App() {
       {/* NAVIGATIEBALK */}
       <nav className="navbar" style={{ padding: isScrolled ? '0.5rem 0' : '1rem 0' }}>
         <div className="container nav-container">
+          
+          {/* Mobiele social icons links (zichtbaar zolang menu gesloten is) */}
+          <div className="mobile-header-social-icons">
+            {!mobileMenuOpen && (
+              <div className="mobile-social-wrap">
+                {content.instagramLink && (
+                  <a href={content.instagramLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="Instagram">
+                    <InstagramIcon />
+                  </a>
+                )}
+                {content.facebookLink && (
+                  <a href={content.facebookLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="Facebook">
+                    <FacebookIcon />
+                  </a>
+                )}
+                {content.linkedinLink && (
+                  <a href={content.linkedinLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="LinkedIn">
+                    <LinkedinIcon />
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="logo" style={{ display: 'flex', alignItems: 'center' }}>
             {content.logoVideo ? (
               <video className="header-logo-video" src={content.logoVideo} autoPlay loop muted playsInline style={{ 
@@ -957,7 +981,7 @@ function App() {
               );
             })}
             
-            <div className="nav-social-icons">
+            <div className="desktop-social-icons nav-social-icons">
               {content.instagramLink && (
                 <a href={content.instagramLink} target="_blank" rel="noopener noreferrer" className="nav-social-icon" aria-label="Instagram">
                   <InstagramIcon />
@@ -981,7 +1005,7 @@ function App() {
             }}><EditableText fieldKey="navBtnText" /></a>
           </div>
 
-          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu">
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
