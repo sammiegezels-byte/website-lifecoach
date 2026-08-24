@@ -510,6 +510,9 @@ export function AdminModals() {
         <h4 style={settingsTitleStyle}>SEO / Google (Zoekresultaten)</h4>
         <Field label="Website Titel (Google Tabblad)" field="seoTitle" val={content.seoTitle} update={updateContent} type="plain" />
         <Field label="Website Omschrijving (Google Zoekresultaten)" field="seoDescription" val={content.seoDescription} update={updateContent} type="plain" multiline={true} />
+        <p style={{color: '#888', fontSize: '0.8rem', marginTop: '-10px', fontStyle: 'italic'}}>
+          Tip: Hou dit tussen de 120 en 160 tekens. Let op: nadat je dit aanpast, kan het tot een week duren voordat Google de nieuwe tekst laat zien!
+        </p>
       </div>
 
       <div style={settingsSectionStyle}>
