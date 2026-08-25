@@ -152,7 +152,7 @@ img {
   white-space: nowrap;
 }
 
-.nav-links a:not(.btn) {
+.nav-links a:not(.btn):not(.nav-social-icon) {
   font-family: var(--font-heading);
   font-weight: 600;
   text-transform: uppercase;
@@ -179,16 +179,16 @@ img {
   touch-action: manipulation;
 }
 
-.nav-links a:not(.btn):hover,
-.nav-links a:not(.btn):focus-visible,
-.nav-links a:not(.btn).active {
+.nav-links a:not(.btn):not(.nav-social-icon):hover,
+.nav-links a:not(.btn):not(.nav-social-icon):focus-visible,
+.nav-links a:not(.btn):not(.nav-social-icon).active {
   --_p: 0px;
   outline-color: var(--color);
   outline-offset: .05em;
   color: var(--color-text);
 }
 
-.nav-links a:not(.btn):active {
+.nav-links a:not(.btn):not(.nav-social-icon):active {
   background: var(--color);
   color: var(--color-white);
 }
@@ -702,21 +702,37 @@ footer {
 }
 
 .nav-social-icon {
-  width: 36px;
-  height: 36px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text);
-  transition: var(--transition);
+  width: 36px !important;
+  height: 36px !important;
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #333333 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  transition: var(--transition) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-decoration: none !important;
+}
+
+.nav-social-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke: #2c3e50 !important;
+  display: block !important;
+  transition: stroke 0.2s ease !important;
 }
 
 .nav-social-icon:hover {
-  background-color: var(--color-primary);
-  color: #fff;
-  transform: translateY(-2px);
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  transform: translateY(-2px) !important;
+}
+
+.nav-social-icon:hover svg {
+  stroke: #ffffff !important;
 }
 
 .mobile-header-social-icons {
@@ -738,12 +754,12 @@ footer {
     align-items: center;
   }
   .mobile-header-social-icons .nav-social-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px !important;
+    height: 34px !important;
   }
   .mobile-header-social-icons .nav-social-icon svg {
-    width: 15px;
-    height: 15px;
+    width: 16px !important;
+    height: 16px !important;
   }
   .desktop-social-icons {
     display: none !important;
