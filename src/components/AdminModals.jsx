@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useCMS, uploadToCloudinary } from '../cms';
-import { LogOut, X, Plus, Trash2, ArrowUp, ArrowDown, MoveUp, MoveDown, Settings, ChevronLeft, Check, Image as ImageIcon, Calendar, RefreshCw, Archive, Video, Folder } from 'lucide-react';
+import { LogOut, X, Plus, Trash2, ArrowUp, ArrowDown, MoveUp, MoveDown, Settings, ChevronLeft, Check, Image as ImageIcon, Calendar, RefreshCw, Archive, Video, Folder, Trophy } from 'lucide-react';
 import { AdminDossiers } from './AdminDossiers';
+import { AdminChallenges } from './AdminChallenges';
 
 const FONTS = [
   'Roboto', 'Open Sans', 'Inter', 'Montserrat', 'Poppins', 'Lato', 
@@ -273,6 +274,7 @@ export function AdminModals() {
   const [showTrash, setShowTrash] = useState(false);
   const [showAgenda, setShowAgenda] = useState(false);
   const [showDossiers, setShowDossiers] = useState(false);
+  const [showChallenges, setShowChallenges] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -583,6 +585,7 @@ export function AdminModals() {
               ) : 'Beheer'}
             </h2>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+              <button onClick={() => setShowChallenges(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#f59e0b'}} title="Challenge & Quiz Beheer"><Trophy size={18}/></button>
               <button onClick={() => setShowDossiers(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#f39c12'}} title="Dossierbeheer"><Folder size={18}/></button>
               <button onClick={() => setShowAgenda(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#2ecc71'}} title="Agenda & Boekingen"><Calendar size={18}/></button>
               {content.trashedSections && content.trashedSections.length > 0 && (
@@ -629,6 +632,10 @@ export function AdminModals() {
 
           {showDossiers && (
             <AdminDossiers close={() => setShowDossiers(false)} />
+          )}
+
+          {showChallenges && (
+            <AdminChallenges close={() => setShowChallenges(false)} content={content} updateContent={updateContent} />
           )}
         </div>
       )}
@@ -998,10 +1005,13 @@ const BlockEditor = ({ sectionId, content, updateContent }) => {
                 >
                   <option value="link">Link openen (bijv. naar contact)</option>
                   <option value="expand">Tekst uitklappen bij klikken</option>
+                  <option value="signup">Inschrijven / Aanmelden formulier</option>
+                  <option value="quiz">Challenge / Quiz starten (Quiz Maker)</option>
+                  <option value="html">HTML Code tonen (zoals Web3Forms)</option>
                 </select>
               </div>
 
-              {(b.actionType === 'expand' || (!b.actionType && b.expandText)) ? (
+              {b.actionType === 'expand' || (!b.actionType && b.expandText) ? (
                 <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
                   <label style={{color: '#aaa', fontSize: '0.85rem'}}>Tekst die verschijnt als men op de knop klikt:</label>
                   <textarea 
@@ -1010,6 +1020,30 @@ const BlockEditor = ({ sectionId, content, updateContent }) => {
                     onChange={e => updateBlock(b.id, {expandText: e.target.value})} 
                     style={{...inputStyle, minHeight: '120px', resize: 'vertical'}} 
                   />
+                </div>
+              ) : b.actionType === 'signup' ? (
+                <div style={{background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', borderRadius: '8px', padding: '1rem', color: '#34d399', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                  <div style={{fontWeight: 'bold'}}>📝 Inschrijfformulier (Naam, E-mail, Telefoon)</div>
+                  <div style={{color: '#e2e8f0', fontSize: '0.85rem'}}>
+                    Bezoekers kunnen zich via deze knop direct aanmelden (naam, e-mail en optioneel telefoon). Alle inschrijvingen verschijnen overzichtelijk in het beheerpaneel!
+                  </div>
+                </div>
+              ) : b.actionType === 'html' ? (
+                <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                  <label style={{color: '#f59e0b', fontSize: '0.85rem', fontWeight: 'bold'}}>Web3Forms of HTML Code (opent in pop-up):</label>
+                  <textarea 
+                    placeholder="Plak hier je <form action='https://api.web3forms.com/submit' ...> of embed code..." 
+                    value={b.htmlCode || ''} 
+                    onChange={e => updateBlock(b.id, {htmlCode: e.target.value})} 
+                    style={{...inputStyle, minHeight: '140px', fontFamily: 'monospace', color: '#38bdf8', resize: 'vertical'}} 
+                  />
+                </div>
+              ) : b.actionType === 'quiz' ? (
+                <div style={{background: 'rgba(245, 158, 11, 0.1)', border: '1px solid #f59e0b', borderRadius: '8px', padding: '1rem', color: '#fbbf24', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                  <div style={{fontWeight: 'bold'}}>🏆 Gekoppeld aan de Challenge & Quiz Maker</div>
+                  <div style={{color: '#e2e8f0', fontSize: '0.85rem'}}>
+                    Als een bezoeker op deze knop klikt, opent direct de interactieve challenge quiz. Deelnemers worden automatisch geregistreerd in het beheerpaneel!
+                  </div>
                 </div>
               ) : (
                 <input type="text" placeholder="Link (bijv. #contact of https://...)" value={b.link || ''} onChange={e => updateBlock(b.id, {link: e.target.value})} style={inputStyle} />

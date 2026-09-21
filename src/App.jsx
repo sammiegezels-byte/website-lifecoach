@@ -4,6 +4,7 @@ import { Compass, Heart, TrendingUp, Menu, X, ArrowLeft, ArrowRight, Plus, Trash
 import { useCMS, EditableText, EditableImage, EditableVideo } from './cms';
 
 const AdminModals = lazy(() => import('./components/AdminModals').then(module => ({ default: module.AdminModals })));
+import { ChallengeModal } from './components/ChallengeModal';
 import './index.css';
 
 const InstagramIcon = () => (
@@ -30,7 +31,34 @@ const LinkedinIcon = () => (
 
 const BlockButton = ({ b }) => {
   const [expanded, setExpanded] = useState(false);
-  const isExpandType = b.actionType === 'expand' || (!b.link && b.expandText);
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
+
+  const isChallengeType = b.actionType === 'quiz' || b.actionType === 'html' || b.actionType === 'signup';
+  const isExpandType = !isChallengeType && (b.actionType === 'expand' || (!b.link && b.expandText));
+
+  if (isChallengeType) {
+    return (
+      <div style={{ textAlign: b.align || 'center', width: '100%' }}>
+        <button 
+          type="button" 
+          className="btn" 
+          onClick={() => setShowChallengeModal(true)}
+          style={{ display: 'inline-block', fontSize: '1.1rem', padding: '1rem 3rem', cursor: 'pointer' }}
+        >
+          {b.label || (b.actionType === 'signup' ? 'Schrijf je in' : 'Gratis Challenge')}
+        </button>
+        {showChallengeModal && (
+          <ChallengeModal 
+            challengeId={b.challengeId}
+            customHtml={b.actionType === 'html' ? b.htmlCode : null}
+            buttonLabel={b.label}
+            actionType={b.actionType}
+            close={() => setShowChallengeModal(false)}
+          />
+        )}
+      </div>
+    );
+  }
 
   if (isExpandType) {
     return (
@@ -733,34 +761,29 @@ const CustomSection = ({ sectionId }) => {
 
   const blocksKey = `customBlocks_${sectionId}`;
   const blocks = content[blocksKey] || [];
-
-  if (blocks.length > 0) {
-    return (
-      <section id={sectionId} className="section-padding" style={getSectionStyle(sectionId, content, { position: 'relative', background: '#fff', overflow: 'hidden' })}>
-        <ThemeEffectOverlay sectionId={sectionId} content={content} />
-        <VideoBackground url={content[`customBgVideo_${sectionId}`]} invert={content[`invertVideo_${sectionId}`]} />
-        <div className="container" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '3rem', maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}><EditableText fieldKey={`customTitle_${sectionId}`} /></h2>
-          <RenderBlocks blocks={blocks} />
-        </div>
-      </section>
-    );
-  }
+  const hasAboutGrid = !!(content[`customText_${sectionId}`] || content[`customImage_${sectionId}`]);
 
   return (
     <section id={sectionId} className="about section-padding" style={getSectionStyle(sectionId, content, { position: 'relative', background: '#fff', overflow: 'hidden' })}>
       <ThemeEffectOverlay sectionId={sectionId} content={content} />
       <VideoBackground url={content[`customBgVideo_${sectionId}`]} invert={content[`invertVideo_${sectionId}`]} />
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.staggerContainer}>
-          <motion.div className="about-text" variants={variants.slideInLeft}>
-            <h2><EditableText fieldKey={`customTitle_${sectionId}`} /></h2>
-            <div style={{ marginBottom: '1rem' }}><EditableText fieldKey={`customText_${sectionId}`} multiline /></div>
+        {hasAboutGrid ? (
+          <motion.div className="about-grid" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.staggerContainer}>
+            <motion.div className="about-text" variants={variants.slideInLeft}>
+              <h2><EditableText fieldKey={`customTitle_${sectionId}`} /></h2>
+              <div style={{ marginBottom: '1rem' }}><EditableText fieldKey={`customText_${sectionId}`} multiline /></div>
+            </motion.div>
+            {content[`customImage_${sectionId}`] && (
+              <motion.div className="about-img" variants={variants.slideInRight}>
+                <EditableImage fieldKey={`customImage_${sectionId}`} alt="Custom" />
+              </motion.div>
+            )}
           </motion.div>
-          <motion.div className="about-img" variants={variants.slideInRight}>
-            <EditableImage fieldKey={`customImage_${sectionId}`} alt="Custom" />
-          </motion.div>
-        </motion.div>
+        ) : (
+          <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}><EditableText fieldKey={`customTitle_${sectionId}`} /></h2>
+        )}
+        <RenderBlocks blocks={blocks} />
       </div>
     </section>
   );
