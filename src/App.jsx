@@ -1,7 +1,9 @@
-import React, { useState, useEffect, Suspense, lazy, useRef } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
-import { Compass, Heart, TrendingUp, Menu, X, ArrowLeft, ArrowRight, Plus, Trash2, Check } from 'lucide-react';
+import { Compass, Heart, TrendingUp, Menu, X } from 'lucide-react';
 import { useCMS, EditableText, EditableImage, EditableVideo } from './cms';
+import { getActiveSectionOrder } from './sectionState';
+import { ContactSection as ContactSectionContent } from './components/ContactSection';
 
 const AdminModals = lazy(() => import('./components/AdminModals').then(module => ({ default: module.AdminModals })));
 import { ChallengeModal } from './components/ChallengeModal';
@@ -89,7 +91,9 @@ const BlockButton = ({ b }) => {
               color: 'var(--color-text)'
             }}
           >
-            {b.expandText || b.text || 'Geen tekst ingesteld.'}
+            {b.expandTextFormat === 'html' ? (
+              <div dangerouslySetInnerHTML={{ __html: b.expandText || b.text || 'Geen tekst ingesteld.' }} />
+            ) : (b.expandText || b.text || 'Geen tekst ingesteld.')}
           </motion.div>
         )}
       </div>
@@ -217,7 +221,7 @@ const getSectionStyle = (sectionId, content, baseStyle = {}) => ({
 });
 
 const HeroSection = () => {
-  const { content, updateContent, isAdmin } = useCMS();
+  const { content, isAdmin } = useCMS();
   const { variants } = useAnimations();
   return (
     <section id="home" className="hero" style={getSectionStyle('home', content, { backgroundImage: `url(${content.heroImage})`, position: 'relative' })}>
@@ -237,7 +241,7 @@ const HeroSection = () => {
 };
 
 const AboutSection = () => {
-  const { content, isAdmin } = useCMS();
+  const { content } = useCMS();
   const { variants, viewportProps, isEnabled } = useAnimations();
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -508,239 +512,18 @@ const ServicesSection = () => {
   );
 };
 
-const BookingWidget = ({ questionId, questionText }) => {
-  const { content } = useCMS();
-  const slots = content.availableSlots || [];
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
-
-  const now = new Date();
-  const validSlots = slots.filter(s => {
-    if (!s.date || !s.time) return false;
-    const slotDate = new Date(`${s.date}T${s.time}`);
-    return slotDate > now;
-  });
-
-  const grouped = {};
-  validSlots.forEach(s => {
-    if (!grouped[s.date]) grouped[s.date] = [];
-    if (!grouped[s.date].includes(s.time)) grouped[s.date].push(s.time);
-  });
-  const sortedDates = Object.keys(grouped).sort();
-
-  const handleDateClick = (date) => {
-    if (selectedDate === date) {
-      setSelectedDate(null);
-      setSelectedTime(null);
-    } else {
-      setSelectedDate(date);
-      setSelectedTime(null);
-    }
-  };
-
-  const handleTimeClick = (time, e) => {
-    e.preventDefault();
-    if (selectedTime === time) setSelectedTime(null);
-    else setSelectedTime(time);
-  };
-
-  const formatDate = (dateString) => {
-    const d = new Date(dateString);
-    return d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
-  };
-
-  return (
-    <div className="form-group full-width" style={{ marginBottom: '1.5rem', background: 'rgba(255,255,255,0.7)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #ddd' }}>
-      <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '1rem', color: '#333', fontWeight: '600', fontSize: '1.1rem' }}>
-        <span>{questionText.split('.')[0]}.</span>
-        <span>{questionText.substring(questionText.indexOf('.') + 1).trim()}</span>
-      </label>
-      
-      <input type="hidden" name={questionId} value={selectedTime ? `${selectedDate} om ${selectedTime}` : 'Geen blokje gekozen'} />
-
-      {sortedDates.length === 0 ? (
-        <p style={{ color: '#666', fontStyle: 'italic', margin: 0, paddingLeft: '1.5rem' }}>Momenteel geen vrije blokjes beschikbaar via de kalender. Vul een voorkeur in bij vraag 5 of stuur gewoon een berichtje.</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingLeft: '1.5rem' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {sortedDates.map(date => (
-              <button
-                key={date}
-                type="button"
-                onClick={() => handleDateClick(date)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '20px',
-                  border: selectedDate === date ? '2px solid var(--color-primary)' : '1px solid #ccc',
-                  background: selectedDate === date ? 'var(--color-primary)' : '#fff',
-                  color: selectedDate === date ? '#fff' : '#333',
-                  cursor: 'pointer',
-                  fontWeight: selectedDate === date ? 'bold' : 'normal',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {formatDate(date)}
-              </button>
-            ))}
-          </div>
-
-          {selectedDate && grouped[selectedDate] && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem', padding: '1rem', background: 'rgba(255,255,255,0.8)', borderRadius: '8px', border: '1px solid #eee' }}>
-              <span style={{ width: '100%', fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem' }}>Kies een uur:</span>
-              {grouped[selectedDate].sort().map(time => (
-                <button
-                  key={time}
-                  type="button"
-                  onClick={(e) => handleTimeClick(time, e)}
-                  style={{
-                    padding: '0.4rem 1rem',
-                    borderRadius: '8px',
-                    border: selectedTime === time ? '2px solid var(--color-primary)' : '1px solid #ccc',
-                    background: selectedTime === time ? 'var(--color-primary)' : '#fff',
-                    color: selectedTime === time ? '#fff' : '#333',
-                    cursor: 'pointer',
-                    fontWeight: selectedTime === time ? 'bold' : 'normal',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {time}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {selectedDate && selectedTime && (
-            <div style={{ padding: '0.8rem', background: '#eaf4ea', border: '1px solid #c3e2c3', borderRadius: '8px', color: '#2d5a2d', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Check size={18} /> Geselecteerd: {formatDate(selectedDate)} om {selectedTime}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ContactSection = ({ setShowPrivacy }) => {
-  const { content, isAdmin, updateMultiple } = useCMS();
-  const { variants, viewportProps } = useAnimations();
-  const formRef = useRef(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Check for booking slot selected
-    const formData = new FormData(formRef.current);
-    const bookingQ = (content.contactQuestions || []).find(q => q.type === 'booking');
-    if (bookingQ) {
-      const selected = formData.get(bookingQ.id);
-      if (selected && selected !== 'Geen blokje gekozen') {
-        const [date, time] = selected.split(' om ');
-        if (date && time) {
-          const bookedSlots = content.bookedSlots || [];
-          const name = formData.get('name') || 'Onbekend';
-          const email = formData.get('email') || '';
-          const phone = formData.get('phone') || '';
-          updateMultiple({ bookedSlots: [...bookedSlots, { date, time, name, email, phone }] });
-        }
-      }
-    }
-    
-    formRef.current.submit();
-  };
-
-  return (
-    <section id="contact" className="contact section-padding" style={getSectionStyle('contact', content, { backgroundImage: `url(${content.contactImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', position: 'relative', overflow: 'hidden' })}>
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 250, 247, 0.6)' }}></div>
-      <ThemeEffectOverlay sectionId="contact" content={content} />
-      <VideoBackground url={content.customBgVideo_contact} invert={content.invertVideo_contact} />
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <motion.div className="contact-container" initial="hidden" whileInView="visible" viewport={viewportProps} variants={variants.fadeUp}>
-          <h2><EditableText fieldKey="contactTitle" /></h2>
-          <div style={{ marginBottom: '1rem' }}><EditableText fieldKey="contactSubtitle" /></div>
-          <form ref={formRef} className="contact-form" action="https://api.web3forms.com/submit" method="POST" onSubmit={handleSubmit}>
-            <input type="hidden" name="access_key" value={content.web3formsKey || ''} />
-            <input type="hidden" name="subject" value="Nieuw bericht via de coaching website!" />
-            <input type="hidden" name="redirect" value={window.location.href} />
-            <div className="form-group">
-              <input type="text" name="name" placeholder="Naam" required />
-            </div>
-            <div className="form-group">
-              <input type="email" name="email" placeholder="E-mailadres" required />
-            </div>
-            <div className="form-group full-width">
-              <input type="tel" name="phone" placeholder="Telefoonnummer (optioneel)" />
-            </div>
-            {(content.contactQuestions || []).map(q => {
-              if (!q || !q.question) return null;
-
-              // Format question for better alignment if it starts with a number
-              let qNumber = '';
-              let qText = q.question;
-              if (q.question.match(/^\d+\./)) {
-                qNumber = q.question.split('.')[0] + '.';
-                qText = q.question.substring(q.question.indexOf('.') + 1).trim();
-              }
-              
-              if (q.type === 'booking') {
-                return <BookingWidget key={q.id} questionId={q.id} questionText={q.question} />;
-              }
-              
-              if (q.type === 'checkbox' || q.type === 'radio') {
-                const options = (q.options || '').split(',').map(o => o.trim()).filter(o => o);
-                return (
-                  <div key={q.id} className="form-group full-width" style={{ marginBottom: '1.5rem' }}>
-                    <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '0.8rem', color: '#333', fontWeight: '600' }}>
-                      {qNumber && <span>{qNumber}</span>}
-                      <span>{qText}</span>
-                    </label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: qNumber ? '1.5rem' : '0' }}>
-                      {options.map((opt, i) => (
-                        <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#555', cursor: 'pointer' }}>
-                          <input type={q.type} name={q.type === 'checkbox' ? `${q.id}[]` : q.id} value={opt} style={{ width: 'auto', margin: 0 }} />
-                          {opt}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                );
-              }
-              
-              return (
-                <div key={q.id} className="form-group full-width" style={{ marginBottom: '1.5rem' }}>
-                  <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '0.8rem', color: '#333', fontWeight: '600' }}>
-                    {qNumber && <span>{qNumber}</span>}
-                    <span>{qText}</span>
-                  </label>
-                  <div style={{ paddingLeft: qNumber ? '1.5rem' : '0' }}>
-                    <input type="text" name={q.id} placeholder="Jouw antwoord" style={{ width: '100%', boxSizing: 'border-box' }} />
-                  </div>
-                </div>
-              );
-            })}
-            <div className="form-group full-width">
-              <textarea name="message" placeholder="Jouw bericht" required></textarea>
-            </div>
-            <div className="full-width" style={{ textAlign: 'center', marginTop: '1rem' }}>
-              <button type="submit" className="btn"><EditableText fieldKey="contactSubmitBtnText" /></button>
-              {content.privacyDisclaimer && (
-                <div style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#666' }}>
-                  Jouw gegevens worden vertrouwelijk behandeld en nooit gedeeld met derden.{' '}
-                  <button type="button" onClick={(e) => { e.preventDefault(); setShowPrivacy(true); }} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', textDecoration: 'underline', padding: 0, font: 'inherit' }}>
-                    Privacybeleid
-                  </button>
-                </div>
-              )}
-            </div>
-          </form>
-        </motion.div>
-        <RenderBlocks blocks={content.customBlocks_contact} />
-      </div>
-    </section>
-  );
-};
-
+const ContactSection = (props) => (
+  <ContactSectionContent
+    {...props}
+    animations={useAnimations()}
+    RenderBlocks={RenderBlocks}
+    getSectionStyle={getSectionStyle}
+    ThemeEffectOverlay={ThemeEffectOverlay}
+    VideoBackground={VideoBackground}
+  />
+);
 const ParallaxSection = ({ id, imageKey, quoteKey }) => {
-  const { content, isAdmin } = useCMS();
+  const { content } = useCMS();
   const { variants, viewportProps } = useAnimations();
 
   return (
@@ -794,7 +577,7 @@ function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
-  const { content, updateMultiple, isAdmin, showLogin, setShowLogin } = useCMS();
+  const { content, isAdmin, showLogin, setShowLogin } = useCMS();
 
   useEffect(() => {
     if (content.seoTitle) {
@@ -925,7 +708,7 @@ function App() {
     document.documentElement.style.setProperty('--color-primary', color);
   }, [content.themeHeadingFont, content.themeBodyFont, content.themeColor]);
 
-  const sectionOrder = content.sectionOrder || ['home', 'over-mij', 'parallax_1', 'visie', 'werk-met-mij', 'parallax_2', 'aanbod', 'contact'];
+  const sectionOrder = getActiveSectionOrder(content);
 
   const getMenuLabel = (id) => {
     if (id === 'home') return 'Home';
@@ -990,7 +773,7 @@ function App() {
           </div>
           
           <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            {sectionOrder.map((id, index) => {
+            {sectionOrder.map(id => {
               const label = getMenuLabel(id);
               if (!label && !isAdmin) return null;
               if (!label && isAdmin && (id === 'contact' || id.startsWith('parallax'))) return null;

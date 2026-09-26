@@ -22,9 +22,9 @@ const iconBtnStyle = {
   borderRadius: '8px', transition: 'all 0.2s'
 };
 
-export const AdminDossiers = ({ close }) => {
+export const AdminDossiers = ({ close, initialDossierId = null }) => {
   const [dossiers, setDossiers] = useState([]);
-  const [selectedDossierId, setSelectedDossierId] = useState(null);
+  const [selectedDossierId, setSelectedDossierId] = useState(initialDossierId);
   const [selectedSubIndex, setSelectedSubIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   

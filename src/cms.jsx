@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { db } from './firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { getActiveSectionOrder, getTrashSectionUpdates, getRestoreSectionUpdates, getPermanentlyRemoveSectionUpdates } from './sectionState';
+import './cms-loading.css';
 
 // Default content
 const defaultContent = {
@@ -106,45 +108,50 @@ const CMSContext = createContext();
 
 export function CMSProvider({ children }) {
   const [content, setContent] = useState(defaultContent);
+  const [loadState, setLoadState] = useState({ status: 'loading', message: '' });
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
-    // Luister live naar Firebase Firestore wijzigingen
+    // Show the actual saved website only after the first successful read.
+    // Missing content must never overwrite the database with demo content.
     const docRef = doc(db, 'coaching', 'content');
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+    let receivedContent = false;
+    const timeout = window.setTimeout(() => {
+      if (!receivedContent) {
+        setLoadState({ status: 'error', message: 'Het laden duurt langer dan verwacht. Controleer je internetverbinding en probeer opnieuw.' });
+      }
+    }, 15000);
+
+    const unsubscribe = onSnapshot(docRef, { includeMetadataChanges: true }, (docSnap) => {
       if (docSnap.exists()) {
+        receivedContent = true;
+        window.clearTimeout(timeout);
         setContent({ ...defaultContent, ...docSnap.data() });
-      } else {
-        setDoc(docRef, defaultContent);
+        setLoadState({ status: 'ready', message: '' });
+      } else if (!docSnap.metadata.fromCache) {
+        window.clearTimeout(timeout);
+        setLoadState({ status: 'error', message: 'De website-inhoud is momenteel niet beschikbaar. Probeer het later opnieuw.' });
       }
     }, (error) => {
       console.error("Firebase Snapshot error:", error);
+      window.clearTimeout(timeout);
+      if (!receivedContent) {
+        setLoadState({ status: 'error', message: 'De website kon niet worden geladen. Controleer je internetverbinding en probeer opnieuw.' });
+      }
     });
 
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (isAdmin && content.trashedSections && content.trashedSections.length > 0) {
-      const now = Date.now();
-      const FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
-      const validTrashed = content.trashedSections.filter(t => (now - t.deletedAt) < FIFTEEN_DAYS);
-      
-      if (validTrashed.length !== content.trashedSections.length) {
-        const toDelete = content.trashedSections.filter(t => (now - t.deletedAt) >= FIFTEEN_DAYS);
-        const customSections = content.customSections || [];
-        const newCustoms = customSections.filter(s => !toDelete.find(td => td.id === s.id));
-        updateMultiple({ trashedSections: validTrashed, customSections: newCustoms });
-      }
-    }
-  }, [isAdmin, content.trashedSections]);
+    return () => {
+      window.clearTimeout(timeout);
+      unsubscribe();
+    };
+  }, [loadAttempt]);
 
   const updateContent = async (key, value) => {
     // Lokale state updaten voor instant feedback (optimistic UI)
-    const newContent = { ...content, [key]: value };
-    setContent(newContent);
+    setContent(current => ({ ...current, [key]: value }));
     
     // Direct opslaan in Firestore
     try {
@@ -156,19 +163,32 @@ export function CMSProvider({ children }) {
     }
   };
 
-  const updateMultiple = async (updatesObj) => {
-    const newContent = { ...content, ...updatesObj };
-    setContent(newContent);
+  const updateMultiple = useCallback(async (updatesObj) => {
+    setContent(current => ({ ...current, ...updatesObj }));
     try {
       const docRef = doc(db, 'coaching', 'content');
       await setDoc(docRef, updatesObj, { merge: true });
     } catch (error) {
       console.error("Fout bij opslaan in Firebase:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    const now = Date.now();
+    const FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
+    const expired = (content.trashedSections || []).filter(section => (now - section.deletedAt) >= FIFTEEN_DAYS);
+    if (expired.length > 0) {
+      const updates = getPermanentlyRemoveSectionUpdates(content, expired.map(section => section.id));
+      // The live listener applies background cleanup once it has been saved.
+      setDoc(doc(db, 'coaching', 'content'), updates, { merge: true }).catch(error => {
+        console.error('Fout bij opruimen van de prullenbak:', error);
+      });
+    }
+  }, [isAdmin, content]);
 
   const moveSection = (index, direction) => {
-    const sectionOrder = content.sectionOrder || [];
+    const sectionOrder = getActiveSectionOrder(content);
     const newOrder = [...sectionOrder];
     if (direction === -1 && index > 0) {
       [newOrder[index], newOrder[index - 1]] = [newOrder[index - 1], newOrder[index]];
@@ -180,7 +200,7 @@ export function CMSProvider({ children }) {
 
   const addCustomSection = () => {
     const newId = 'custom_' + Date.now();
-    const sectionOrder = content.sectionOrder || [];
+    const sectionOrder = getActiveSectionOrder(content);
     const newOrder = [...sectionOrder];
     
     newOrder.push(newId);
@@ -197,7 +217,7 @@ export function CMSProvider({ children }) {
 
   const addParallaxSection = () => {
     const newId = 'parallax_' + Date.now();
-    const sectionOrder = content.sectionOrder || [];
+    const sectionOrder = getActiveSectionOrder(content);
     const newOrder = [...sectionOrder];
     
     newOrder.push(newId);
@@ -211,37 +231,40 @@ export function CMSProvider({ children }) {
 
   const removeSection = (id) => {
     if (window.confirm("Weet je zeker dat je deze pagina naar de prullenbak wilt verplaatsen? (Blijft 15 dagen bewaard)")) {
-      const sectionOrder = content.sectionOrder || [];
-      const newOrder = sectionOrder.filter(sId => sId !== id);
-      
-      const trashed = content.trashedSections || [];
-      const newTrashed = [...trashed, { id, deletedAt: Date.now() }];
-      
-      updateMultiple({ sectionOrder: newOrder, trashedSections: newTrashed });
+      updateMultiple(getTrashSectionUpdates(content, id));
     }
   };
 
   const restoreSection = (id) => {
-    const trashed = content.trashedSections || [];
-    const newTrashed = trashed.filter(t => t.id !== id);
-    
-    const sectionOrder = content.sectionOrder || [];
-    const newOrder = [...sectionOrder, id];
-    
-    updateMultiple({ sectionOrder: newOrder, trashedSections: newTrashed });
+    updateMultiple(getRestoreSectionUpdates(content, id));
   };
 
   const permanentlyRemoveSection = (id) => {
     if (window.confirm("Weet je zeker dat je deze pagina DEFINITIEF wilt verwijderen? Dit kan niet ongedaan worden gemaakt.")) {
-      const trashed = content.trashedSections || [];
-      const newTrashed = trashed.filter(t => t.id !== id);
-      
-      const customSections = content.customSections || [];
-      const newCustoms = customSections.filter(s => s.id !== id);
-      
-      updateMultiple({ trashedSections: newTrashed, customSections: newCustoms });
+      updateMultiple(getPermanentlyRemoveSectionUpdates(content, [id]));
     }
   };
+
+  if (loadState.status !== 'ready') {
+    return (
+      <main className="cms-loading" aria-busy={loadState.status === 'loading'}>
+        {loadState.status === 'loading' ? (
+          <>
+            <span className="cms-loading-spinner" aria-hidden="true" />
+            <p role="status">De website wordt geladen…</p>
+          </>
+        ) : (
+          <>
+            <p role="alert">{loadState.message}</p>
+            <button type="button" onClick={() => {
+              setLoadState({ status: 'loading', message: '' });
+              setLoadAttempt(attempt => attempt + 1);
+            }}>Opnieuw proberen</button>
+          </>
+        )}
+      </main>
+    );
+  }
 
   return (
     <CMSContext.Provider value={{

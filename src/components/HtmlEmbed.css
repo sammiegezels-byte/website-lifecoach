@@ -1,0 +1,67 @@
+.embedded-form-content {
+  width: 100%;
+  padding: 0.25rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.embedded-form-content .embedded-form-label {
+  display: block;
+  color: #334155;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.embedded-form-content form input:not([hidden]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="reset"]):not([type="button"]):not([type="image"]),
+.embedded-form-content form textarea:not([hidden]),
+.embedded-form-content form select:not([hidden]) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #94a3b8;
+  border-radius: 10px;
+  color: #1e293b;
+  background: #fff;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.embedded-form-content form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.embedded-form-content form :is(input, textarea)::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.embedded-form-content form :is(input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-primary, #739373);
+  outline-offset: 2px;
+}
+
+.embedded-form-content form :is(input, textarea, select):user-invalid {
+  border-color: #dc2626;
+  background-color: #fff7f7;
+}
+
+.embedded-form-content form button:not([type="button"]):not([type="reset"]),
+.embedded-form-content form input[type="submit"] {
+  display: inline-block;
+  padding: 0.9rem 1.6rem;
+  border: none;
+  border-radius: 50px;
+  background: var(--color-accent, #9a5339);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.embedded-form-content form :is(button, input[type="submit"]):focus-visible {
+  outline: 2px solid #334155;
+  outline-offset: 3px;
+}

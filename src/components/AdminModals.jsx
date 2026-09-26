@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCMS, uploadToCloudinary } from '../cms';
-import { LogOut, X, Plus, Trash2, ArrowUp, ArrowDown, MoveUp, MoveDown, Settings, ChevronLeft, Check, Image as ImageIcon, Calendar, RefreshCw, Archive, Video, Folder, Trophy } from 'lucide-react';
+import { LogOut, X, Plus, Trash2, ArrowUp, ArrowDown, MoveUp, MoveDown, Settings, ChevronLeft, Image as ImageIcon, Calendar, RefreshCw, Archive, Folder, Trophy, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { AdminDossiers } from './AdminDossiers';
+import { BookingAgendaModal } from './BookingAgendaModal';
 import { AdminChallenges } from './AdminChallenges';
 
 const FONTS = [
@@ -14,6 +15,7 @@ const FONTS = [
 
 export const RichTextEditor = ({ value, onChange, multiline }) => {
   const editorRef = useRef(null);
+  const selectionRef = useRef(null);
   
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== (value || '')) {
@@ -21,12 +23,27 @@ export const RichTextEditor = ({ value, onChange, multiline }) => {
     }
   }, [value]);
 
+  const rememberSelection = () => {
+    const selection = window.getSelection();
+    if (selection?.rangeCount && editorRef.current?.contains(selection.anchorNode) && editorRef.current.contains(selection.focusNode)) {
+      selectionRef.current = selection.getRangeAt(0).cloneRange();
+    }
+  };
+
   const exec = (cmd, val) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const savedSelection = selectionRef.current;
+    editor.focus();
+    if (savedSelection && editor.contains(savedSelection.commonAncestorContainer)) {
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(savedSelection);
+    }
     document.execCommand('styleWithCSS', false, true);
     document.execCommand(cmd, false, val);
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
+    rememberSelection();
+    onChange(editor.innerHTML);
   };
 
   const handleInput = () => {
@@ -37,7 +54,7 @@ export const RichTextEditor = ({ value, onChange, multiline }) => {
 
   return (
     <div style={{ border: '1px solid #555', borderRadius: '8px', overflow: 'hidden', backgroundColor: 'transparent' }}>
-      <div style={{ display: 'flex', gap: '0.5rem', padding: '0.5rem', borderBottom: '1px solid #555', backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.5rem', borderBottom: '1px solid #555', backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', position: 'relative' }}>
           <span style={{ fontSize: '0.8rem', color: '#bbb' }}>Kleur:</span>
           <input type="color" onChange={(e) => exec('foreColor', e.target.value)} title="Geselecteerde tekstkleur" style={{ width: '24px', height: '24px', padding: '0', border: 'none', cursor: 'pointer', background: 'transparent' }} />
@@ -52,14 +69,28 @@ export const RichTextEditor = ({ value, onChange, multiline }) => {
           <option value="6">Zeer Groot</option>
           <option value="7">Enorm</option>
         </select>
-        <button type="button" onClick={() => exec('bold')} style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: '4px', padding: '0.2rem 0.6rem', cursor: 'pointer', fontWeight: 'bold' }}>B</button>
-        <button type="button" onClick={() => exec('italic')} style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: '4px', padding: '0.2rem 0.6rem', cursor: 'pointer', fontStyle: 'italic' }}>I</button>
+        <button type="button" title="Vetgedrukt" aria-label="Vetgedrukt" onMouseDown={e => e.preventDefault()} onClick={() => exec('bold')} style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: '4px', padding: '0.2rem 0.6rem', cursor: 'pointer', fontWeight: 'bold' }}>B</button>
+        <button type="button" title="Cursief" aria-label="Cursief" onMouseDown={e => e.preventDefault()} onClick={() => exec('italic')} style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: '4px', padding: '0.2rem 0.6rem', cursor: 'pointer', fontStyle: 'italic' }}>I</button>
+        {[
+          { command: 'justifyLeft', label: 'Links uitlijnen', Icon: AlignLeft },
+          { command: 'justifyCenter', label: 'Centreren', Icon: AlignCenter },
+          { command: 'justifyRight', label: 'Rechts uitlijnen', Icon: AlignRight },
+        ].map(({ command, label, Icon }) => (
+          <button key={command} type="button" title={label} aria-label={label} onMouseDown={e => e.preventDefault()} onClick={() => exec(command)} style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: '4px', padding: '0.25rem 0.4rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <Icon size={17} />
+          </button>
+        ))}
       </div>
       <div 
         ref={editorRef}
         contentEditable
+        role="textbox"
+        aria-multiline={!!multiline}
+        onMouseUp={rememberSelection}
+        onKeyUp={rememberSelection}
+        onFocus={rememberSelection}
         onInput={handleInput}
-        onBlur={handleInput}
+        onBlur={() => { rememberSelection(); handleInput(); }}
         onPaste={(e) => {
           e.preventDefault();
           const text = e.clipboardData.getData('text/plain');
@@ -112,97 +143,6 @@ const TrashModal = ({ content, restoreSection, permanentlyRemoveSection, close }
             );
           })
         )}
-      </div>
-    </div>
-  );
-};
-
-const BookingAgendaModal = ({ content, updateContent, close }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  
-  const addDays = (date, days) => {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  };
-
-  const dateStr = currentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
-  const slots = content.availableSlots || [];
-  const bookedSlots = content.bookedSlots || [];
-  
-  const slotsForDate = slots.filter(s => s.date === dateStr);
-  const bookedForDate = bookedSlots.filter(b => b.date === dateStr);
-  
-  const toggleSlot = (hour) => {
-    const existing = slots.find(s => s.date === dateStr && s.time === hour);
-    if (existing) {
-      updateContent('availableSlots', slots.filter(s => s.id !== existing.id));
-    } else {
-      updateContent('availableSlots', [...slots, { id: 'slot_' + Date.now(), date: dateStr, time: hour }]);
-    }
-  };
-
-  const hours = Array.from({length: 13}, (_, i) => `${(i + 8).toString().padStart(2, '0')}:00`); // 08:00 - 20:00
-  const nowStr = new Date().toLocaleDateString('en-CA');
-
-  return (
-    <div style={settingsOverlayStyle} onClick={close}>
-      <div style={{...settingsPanelStyle, width: '500px', right: '50%', transform: 'translateX(50%)', zIndex: 10001}} onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h3 style={{ margin: 0, color: '#fff', display: 'flex', gap: '0.5rem', alignItems: 'center' }}><Calendar size={20}/> Agenda Beheer</h3>
-          <button onClick={close} style={iconBtnStyle}><X size={20}/></button>
-        </div>
-        
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem'}}>
-          <button onClick={() => setCurrentDate(addDays(currentDate, -1))} disabled={dateStr <= nowStr} style={{...iconBtnStyle, opacity: dateStr <= nowStr ? 0.3 : 1}}><ChevronLeft size={20}/></button>
-          <div style={{color: '#fff', fontWeight: 'bold', fontSize: '1.1rem', textTransform: 'capitalize'}}>{currentDate.toLocaleDateString('nl-NL', {weekday: 'long', day: 'numeric', month: 'long'})}</div>
-          <button onClick={() => setCurrentDate(addDays(currentDate, 1))} style={{...iconBtnStyle, transform: 'rotate(180deg)'}}><ChevronLeft size={20}/></button>
-        </div>
-
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem'}}>
-          {hours.map(h => {
-            const bookedSlot = bookedForDate.find(b => b.time === h);
-            const isBooked = !!bookedSlot;
-            const isAvailable = slotsForDate.some(s => s.time === h);
-            
-            let bg = 'rgba(255,255,255,0.05)';
-            let color = '#ccc';
-            let border = '1px solid #333';
-            let text = h;
-
-            if (isBooked) {
-              bg = 'rgba(231, 76, 60, 0.2)';
-              border = '1px solid #e74c3c';
-              color = '#e74c3c';
-              text = `${h} (Volzet)`;
-            } else if (isAvailable) {
-              bg = 'rgba(46, 204, 113, 0.2)';
-              border = '1px solid #2ecc71';
-              color = '#2ecc71';
-            }
-
-            return (
-              <button 
-                key={h} 
-                disabled={isBooked}
-                onClick={() => isBooked ? alert(`Geboekt door:\nNaam: ${bookedSlot.name}\nEmail: ${bookedSlot.email}\nTelefoon: ${bookedSlot.phone}`) : toggleSlot(h)}
-                style={{
-                  ...btnStyle, 
-                  background: bg, 
-                  border: border, 
-                  color: color, 
-                  padding: '1rem 0.5rem', 
-                  fontSize: '0.9rem',
-                  opacity: isBooked ? 0.7 : 1,
-                  cursor: isBooked ? 'help' : 'pointer'
-                }}
-                title={isBooked ? `Klant gegevens: ${bookedSlot.name || 'Onbekend'} - Klik voor meer info` : ''}
-              >
-                {text}
-              </button>
-            );
-          })}
-        </div>
       </div>
     </div>
   );
@@ -274,6 +214,7 @@ export function AdminModals() {
   const [showTrash, setShowTrash] = useState(false);
   const [showAgenda, setShowAgenda] = useState(false);
   const [showDossiers, setShowDossiers] = useState(false);
+  const [selectedDossierId, setSelectedDossierId] = useState(null);
   const [showChallenges, setShowChallenges] = useState(false);
 
   const handleLogin = (e) => {
@@ -299,7 +240,8 @@ export function AdminModals() {
     { id: 'footer', title: 'Footer & Privacy' },
   ];
 
-  const customPages = (content.customSections || []).map(s => ({
+  const trashedIds = new Set((content.trashedSections || []).map(section => section.id));
+  const customPages = (content.customSections || []).filter(s => !trashedIds.has(s.id)).map(s => ({
     id: s.id, title: content[`customTitle_${s.id}`] || 'Nieuwe Pagina', isCustom: true
   }));
 
@@ -478,16 +420,6 @@ export function AdminModals() {
     }
   };
 
-  const renderLivePreview = (id) => {
-    return (
-      <div style={previewContainerStyle}>
-        <div style={{ ...previewBoxStyle, fontFamily: content.themeHeadingFont }}>
-          <LivePreviewRenderer id={id} content={content} />
-        </div>
-      </div>
-    );
-  };
-
   const renderSettings = () => (
     <div style={settingsPanelStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -586,7 +518,7 @@ export function AdminModals() {
             </h2>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
               <button onClick={() => setShowChallenges(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#f59e0b'}} title="Challenge & Quiz Beheer"><Trophy size={18}/></button>
-              <button onClick={() => setShowDossiers(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#f39c12'}} title="Dossierbeheer"><Folder size={18}/></button>
+              <button onClick={() => { setSelectedDossierId(null); setShowDossiers(true); }} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#f39c12'}} title="Dossierbeheer"><Folder size={18}/></button>
               <button onClick={() => setShowAgenda(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#2ecc71'}} title="Agenda & Boekingen"><Calendar size={18}/></button>
               {content.trashedSections && content.trashedSections.length > 0 && (
                 <button onClick={() => setShowTrash(true)} style={{...iconBtnStyle, width: '32px', height: '32px', color: '#e74c3c'}} title="Prullenbak"><Archive size={18}/></button>
@@ -627,11 +559,15 @@ export function AdminModals() {
           )}
 
           {showAgenda && (
-            <BookingAgendaModal content={content} updateContent={updateContent} close={() => setShowAgenda(false)} />
+            <BookingAgendaModal content={content} close={() => setShowAgenda(false)} onOpenDossier={id => {
+              setSelectedDossierId(id);
+              setShowAgenda(false);
+              setShowDossiers(true);
+            }} />
           )}
 
           {showDossiers && (
-            <AdminDossiers close={() => setShowDossiers(false)} />
+            <AdminDossiers key={selectedDossierId || 'all'} initialDossierId={selectedDossierId} close={() => setShowDossiers(false)} />
           )}
 
           {showChallenges && (
@@ -1014,11 +950,10 @@ const BlockEditor = ({ sectionId, content, updateContent }) => {
               {b.actionType === 'expand' || (!b.actionType && b.expandText) ? (
                 <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
                   <label style={{color: '#aaa', fontSize: '0.85rem'}}>Tekst die verschijnt als men op de knop klikt:</label>
-                  <textarea 
-                    placeholder="Typ hier de tekst die tevoorschijn komt..." 
-                    value={b.expandText || ''} 
-                    onChange={e => updateBlock(b.id, {expandText: e.target.value})} 
-                    style={{...inputStyle, minHeight: '120px', resize: 'vertical'}} 
+                  <RichTextEditor
+                    multiline
+                    value={b.expandTextFormat === 'html' ? (b.expandText || '') : escapePlainText(b.expandText || '')}
+                    onChange={expandText => updateBlock(b.id, {expandText, expandTextFormat: 'html'})}
                   />
                 </div>
               ) : b.actionType === 'signup' ? (
@@ -1071,6 +1006,12 @@ const BlockEditor = ({ sectionId, content, updateContent }) => {
     </div>
   );
 }
+
+// Old expandable button text was stored as plain text. Escape it before opening
+// the rich editor so literal symbols remain unchanged on its first edit.
+const escapePlainText = (text) => String(text).replace(/[&<>"']/g, character => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[character]));
 
 // --- Styles ---
 

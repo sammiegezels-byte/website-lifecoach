@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import {
   collection, doc, getDoc, getDocs, addDoc, serverTimestamp, query, orderBy, limit
 } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, ArrowRight, ArrowLeft, Trophy, Sparkles, AlertCircle } from 'lucide-react';
+import { HtmlEmbed } from './HtmlEmbed';
 
 export const ChallengeModal = ({ challengeId, customHtml, buttonLabel, actionType, close }) => {
   const [challenge, setChallenge] = useState(null);
@@ -19,7 +20,6 @@ export const ChallengeModal = ({ challengeId, customHtml, buttonLabel, actionTyp
   // 1. Fetch challenge data
   useEffect(() => {
     if (customHtml) {
-      setLoading(false);
       return;
     }
 
@@ -73,10 +73,7 @@ export const ChallengeModal = ({ challengeId, customHtml, buttonLabel, actionTyp
             <button onClick={close} style={closeBtnStyle}><X size={20} /></button>
           </div>
 
-          <div
-            style={{ width: '100%', overflowY: 'auto', maxHeight: '75vh', padding: '0.5rem' }}
-            dangerouslySetInnerHTML={{ __html: rawHtml }}
-          />
+          <HtmlEmbed html={rawHtml} />
         </div>
       </div>
     );

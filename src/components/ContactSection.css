@@ -1,0 +1,250 @@
+.contact-form .contact-label,
+.contact-form .contact-question-title {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.contact-form .contact-required {
+  color: #a62929;
+}
+
+.contact-form .contact-optional {
+  color: #666;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  box-sizing: border-box;
+}
+
+.contact-form fieldset.contact-question {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.contact-form .contact-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.contact-form .contact-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+  color: #444;
+}
+
+.contact-form .contact-option input {
+  flex: 0 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--color-primary);
+}
+
+.contact-form input[aria-invalid="true"],
+.contact-form textarea[aria-invalid="true"],
+.contact-form fieldset.contact-question[aria-invalid="true"] {
+  border: 2px solid #b42318;
+  background-color: #fff6f5;
+}
+
+.contact-form input[aria-invalid="true"]:focus,
+.contact-form textarea[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.15);
+}
+
+.contact .contact-field-error {
+  margin: 0.45rem 0 0;
+  color: #a62929;
+  font-size: 0.9rem;
+}
+
+.contact .contact-form-note {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.contact .contact-status {
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #b8d5bb;
+  background: #f0f7f1;
+  color: #24552a;
+}
+
+.contact .contact-status-error {
+  border-color: #b42318;
+  background: #fff6f5;
+  color: #a62929;
+}
+
+.contact .contact-status-warning {
+  border-color: #b98a21;
+  background: #fff8e7;
+  color: #674e16;
+}
+
+.contact-form .booking-dates,
+.contact-form .booking-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.contact-form .booking-times {
+  padding-top: 1rem;
+}
+
+.contact-form .booking-week-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.contact-form .booking-week-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  color: #333;
+}
+
+.contact-form .booking-week-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.contact-form .booking-week-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.contact-form .booking-week-button {
+  min-height: 44px;
+}
+
+.contact-form .booking-week-button:disabled {
+  cursor: not-allowed;
+  background: #eee;
+  border-color: #d3d3d3;
+  color: #777;
+  opacity: 1;
+}
+
+.contact-form .booking-week-empty {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  background: #f7f7f3;
+  border-radius: 8px;
+}
+
+.contact-form .booking-selection-summary {
+  display: grid;
+  justify-items: start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.contact .booking-selection-summary .booking-selected,
+.contact .booking-selection-summary .contact-field-error {
+  margin: 0;
+}
+
+.contact-form .booking-selection-summary svg {
+  flex-shrink: 0;
+}
+
+.contact-form .booking-choice {
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #aaa;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  font: inherit;
+}
+
+.contact-form .booking-choice[aria-pressed="true"] {
+  border: 2px solid var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.contact-form .booking-choice:focus-visible {
+  outline: 3px solid #333;
+  outline-offset: 2px;
+}
+
+.contact .booking-selected {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  color: #2d5a2d;
+}
+
+.contact-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.contact-form .contact-submit:disabled,
+.contact-form .contact-submit:disabled:hover {
+  background: #d6d6d6;
+  border-color: #d6d6d6;
+  color: #565656;
+  box-shadow: none;
+  transform: none;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.contact-form[aria-busy="true"] .contact-submit:disabled {
+  cursor: wait;
+}
+
+.contact .contact-submit-help {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 520px) {
+  .contact-form .booking-week-header,
+  .contact-form .booking-week-heading,
+  .contact-form .booking-week-navigation {
+    width: 100%;
+  }
+
+  .contact-form .booking-week-heading strong {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .contact-form .booking-week-button {
+    flex: 1 1 120px;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .contact-form .booking-dates .booking-choice,
+  .contact-form .booking-times .booking-choice {
+    min-height: 44px;
+    flex: 1 1 auto;
+  }
+}
