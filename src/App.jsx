@@ -701,7 +701,8 @@ function App() {
       link.rel = 'stylesheet';
       document.head.appendChild(link);
     }
-    link.href = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@400;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;600&display=swap`;
+    const fontHref = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@400;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;600&display=swap`;
+    if (link.href !== fontHref) link.href = fontHref;
 
     document.documentElement.style.setProperty('--font-heading', `"${headingFont}", sans-serif`);
     document.documentElement.style.setProperty('--font-body', `"${bodyFont}", sans-serif`);
@@ -879,7 +880,7 @@ function App() {
             </div>
             {content.privacyDisclaimer && (
               <div style={{ marginTop: '0.5rem' }}>
-                <button onClick={() => setShowPrivacy(true)} style={{ background: 'none', border: 'none', color: '#888', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}>Privacybeleid</button>
+                <button onClick={() => setShowPrivacy(true)} style={{ background: 'none', border: 'none', color: '#9c9c9c', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}>Privacybeleid</button>
               </div>
             )}
           </div>

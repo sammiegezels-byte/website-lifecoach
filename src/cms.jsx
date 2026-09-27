@@ -3,6 +3,7 @@ import { db } from './firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { getActiveSectionOrder, getTrashSectionUpdates, getRestoreSectionUpdates, getPermanentlyRemoveSectionUpdates } from './sectionState';
 import './cms-loading.css';
+import { imageDimensions } from './imageDimensions';
 
 // Default content
 const defaultContent = {
@@ -297,7 +298,7 @@ export function EditableImage({ fieldKey, className = "", style = {}, alt = "" }
   const { content } = useCMS();
   const src = content[fieldKey];
 
-  return <img src={src} alt={alt} className={className} style={style} />;
+  return <img src={src} {...imageDimensions[src]} alt={alt} className={className} style={style} />;
 }
 
 export function EditableVideo({ fieldKey, className = "", style = {} }) {
